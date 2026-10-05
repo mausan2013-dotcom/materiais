@@ -1,0 +1,1483 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#021a30" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Materiais</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Mesmo visual da Ferramentaria (padrão rumolog.com): azul-marinho #043865, azul-claro #32a6e6, Open Sans. */
+:root {
+  --bg: #ebf0f2; --card: #ffffff; --ink: #2b3a48; --title: #043865; --muted: #5f7180; --line: #d3dde3;
+  --bar: #ffffff; --bar-ink: #043865;
+  --primary: #043865; --primary-ink: #ffffff;
+  --accent: #32a6e6; --accent-ink: #ffffff;
+  --ok: #138a6c; --ok-bg: #e1f4ee; --bad: #c62828; --bad-bg: #fdeaea; --warn: #c45a12; --warn-bg: #fff0e5;
+  --toast: #043865;
+  --radius: 6px; --radius-sm: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #021a30; --card: #06294a; --ink: #e6eef5; --title: #ffffff; --muted: #9db3c6; --line: #16416a;
+    --bar: #06294a; --bar-ink: #ffffff;
+    --primary: #32a6e6; --primary-ink: #021a30;
+    --ok: #4fd1a8; --ok-bg: #0c3a33; --bad: #ff7272; --bad-bg: #3d1a24; --warn: #f7a26b; --warn-bg: #3d2a1c;
+    --toast: #32a6e6;
+  }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 "Open Sans", Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; }
+body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+header.top { position: sticky; top: 0; z-index: 5; background: var(--bar); color: var(--bar-ink); border-bottom: 1px solid var(--line); padding: calc(12px + env(safe-area-inset-top)) 16px 12px; display: flex; align-items: center; gap: 10px; }
+header.top .logo { height: 20px; width: auto; color: var(--title); flex: none; }
+header.top .divisor { width: 1px; align-self: stretch; background: var(--line); margin: 2px 2px; }
+.login-marca { text-align: center; margin: 28px 0 8px; color: var(--title); }
+.login-marca .logo { height: 40px; width: auto; }
+.login-marca div { font-size: 13px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
+header.top h1 { font-size: 19px; margin: 0; flex: 1; font-weight: 800; letter-spacing: .1px; min-width: 0; }
+header.top .sub { font-size: 12px; color: var(--muted); font-weight: 600; display: block; text-transform: uppercase; letter-spacing: .5px; }
+header.top .sinc { font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px; background: var(--bg); color: var(--title); border: 1px solid var(--line); white-space: nowrap; }
+header.top .sinc.offline, header.top .sinc.erro { background: var(--warn-bg); color: var(--warn); border-color: var(--warn); }
+header.top button { background: none; border: 0; color: inherit; font-size: 26px; padding: 0 6px 0 0; line-height: 1; cursor: pointer; }
+main { padding: 14px 16px; max-width: 720px; margin: 0 auto; }
+nav.tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 5; background: var(--card); border-top: 1px solid var(--line); display: flex; padding-bottom: env(safe-area-inset-bottom); }
+nav.tabs a { flex: 1; text-align: center; padding: 9px 2px 10px; color: var(--muted); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; border-top: 3px solid transparent; margin-top: -1px; position: relative; }
+nav.tabs a svg { display: block; margin: 0 auto 3px; width: 24px; height: 24px; }
+nav.tabs a.on { color: var(--title); border-top-color: var(--accent); }
+nav.tabs a.on svg { color: var(--accent); }
+nav.tabs a .bolha { position: absolute; top: 4px; left: calc(50% + 6px); background: var(--bad); color: #fff; border-radius: 999px; font-size: 10px; padding: 1px 5px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.card h2 { font-size: 14px; margin: 0 0 10px; color: var(--title); text-transform: uppercase; letter-spacing: .6px; font-weight: 700; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--card); color: var(--title); font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+.btn.big { width: 100%; min-height: 60px; font-size: 18px; }
+.btn.primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+.btn.danger { color: var(--bad); border-color: var(--bad); }
+.btn.full { width: 100%; }
+.btn.sm { min-height: 38px; padding: 0 12px; font-size: 14px; }
+.btn:disabled { opacity: .45; }
+.row { display: flex; gap: 10px; align-items: center; }
+.row > .grow, .grow { flex: 1; min-width: 0; }
+.wrap { flex-wrap: wrap; }
+.stack > * + * { margin-top: 10px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.status { border-radius: 0; padding: 18px 18px 26px; margin-bottom: 12px; border: 0; border-left: 6px solid var(--line);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px)); }
+.status.ok { background: var(--ok-bg); border-left-color: var(--ok); }
+.status.bad { background: var(--bad-bg); border-left-color: var(--bad); }
+.status.neutral { background: #32a6e6; color: #043865; border-left-color: #043865; }
+.status.neutral .muted { color: #043865; }
+.status .big { font-size: 22px; font-weight: 800; color: var(--title); }
+.status.neutral .big { color: #043865; }
+.status.ok .big { color: var(--ok); } .status.bad .big { color: var(--bad); }
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.kpis.k4 { grid-template-columns: repeat(2, 1fr); }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; min-width: 0; }
+.kpi b { display: block; font-size: 24px; font-weight: 800; color: var(--title); overflow-wrap: anywhere; }
+.kpi span { font-size: 12px; color: var(--muted); }
+label.f { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; min-height: 48px; }
+input[type=checkbox] { width: 22px; min-height: 22px; height: 22px; flex: none; }
+textarea { min-height: 80px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.list { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+.li { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-top: 1px solid var(--line); color: inherit; text-decoration: none; }
+.li:first-child { border-top: 0; }
+.li .t { font-weight: 700; color: var(--title); }
+.li .s { font-size: 13px; color: var(--muted); }
+.li.est { opacity: .55; }
+.li.est .t { text-decoration: line-through; }
+.group-h { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--title); margin: 18px 4px 6px; }
+.tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); white-space: nowrap; }
+.tag.ok { color: var(--ok); border-color: var(--ok); background: var(--ok-bg); }
+.tag.bad { color: var(--bad); border-color: var(--bad); background: var(--bad-bg); }
+.tag.warn { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+.qty { font-size: 20px; font-weight: 800; color: var(--title); text-align: right; white-space: nowrap; }
+.qty small { font-size: 12px; font-weight: 600; color: var(--muted); }
+.qty.bad { color: var(--bad); }
+.ctl { display: flex; align-items: center; gap: 6px; }
+.ctl button { width: 46px; height: 46px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--bg); color: var(--title); font-size: 24px; font-weight: 700; cursor: pointer; }
+.ctl input { width: 72px; text-align: center; font-size: 20px; font-weight: 800; height: 46px; min-height: 46px; padding: 0; }
+.x { background: none; border: 0; color: var(--muted); font-size: 22px; padding: 4px 8px; cursor: pointer; }
+.res { margin-top: 6px; }
+.res .li { cursor: pointer; }
+.sticky-foot { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom)); background: var(--bg); padding: 10px 0 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.chips button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.chips button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+dialog { border: 0; border-top: 5px solid var(--accent); border-radius: var(--radius); padding: 0; width: min(560px, calc(100% - 24px)); background: var(--card); color: var(--ink); }
+dialog::backdrop { background: rgba(0,0,0,.55); }
+dialog .dh { padding: 16px 16px 0; font-size: 18px; font-weight: 800; color: var(--title); }
+dialog .db { padding: 14px 16px; max-height: 70vh; overflow: auto; }
+dialog .df { padding: 0 16px 16px; display: flex; gap: 10px; }
+dialog .df .btn { flex: 1; }
+.toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--toast); color: #fff; padding: 12px 18px; border-radius: var(--radius-sm); z-index: 50; font-weight: 600; max-width: calc(100% - 32px); }
+.empty { text-align: center; padding: 28px 12px; color: var(--muted); }
+.seg { display: flex; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 12px; }
+.seg button { flex: 1; min-height: 46px; border: 0; background: var(--card); color: var(--title); font: inherit; font-weight: 700; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+/* Tabelas dos relatórios */
+.tw { overflow-x: auto; }
+table.tb { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.tb th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); font-weight: 700; padding: 6px 8px; border-bottom: 2px solid var(--line); white-space: nowrap; }
+table.tb td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.tb td.n, table.tb th.n { text-align: right; white-space: nowrap; }
+.barra { height: 8px; background: var(--accent); margin-top: 4px; min-width: 2px; }
+.so-print { display: none; }
+header.top .engr { color: var(--muted); width: 26px; height: 26px; flex: none; display: block; }
+header.top .engr svg { width: 26px; height: 26px; }
+nav.tabs a.so-pc { display: none; }
+.progress { height: 6px; background: var(--line); overflow: hidden; margin: 8px 0 2px; }
+.progress i { display: block; height: 100%; background: var(--accent); }
+.cnt { padding: 12px 14px; border-top: 1px solid var(--line); }
+.cnt:first-child { border-top: 0; }
+.cnt .t { font-weight: 700; color: var(--title); }
+.cnt .s { font-size: 13px; color: var(--muted); }
+.cnt .top { display: flex; gap: 8px; align-items: flex-start; }
+.ctl .same { height: 46px; padding: 0 12px; border-radius: var(--radius-sm); border: 1px dashed var(--line); background: none; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+input.qin { width: 76px; min-height: 40px; padding: 6px 8px; text-align: right; font-weight: 700; }
+tr.muted td { color: var(--muted); }
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.cx { display: block; background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: var(--radius); padding: 10px 12px; color: inherit; text-decoration: none; }
+.cx.bad { border-top-color: var(--bad); }
+.cx .n { font-size: 26px; font-weight: 800; color: var(--title); line-height: 1.1; }
+.cx .p { font-weight: 700; font-size: 14px; color: var(--title); }
+.cx .s { font-size: 12px; margin: 2px 0 6px; }
+.ctl .same { white-space: nowrap; }
+.mob { color: var(--ink); }
+.row.wrap > .btn.grow { flex: 1 1 calc(50% - 10px); }
+table.tb a { color: var(--title); font-weight: 700; text-decoration: none; }
+@media (min-width: 641px) { .mob { display: none; } }
+@media (max-width: 640px) { .tb .pc { display: none; } }
+@media (min-width: 900px) { nav.tabs a.so-pc { display: flex; } header.top .engr { display: none; } }
+
+@media (min-width: 900px) {
+  body { padding-bottom: 0; padding-left: 210px; }
+  nav.tabs { top: 0; bottom: 0; right: auto; width: 210px; flex-direction: column; border-top: 0; border-right: 1px solid var(--line); padding: 72px 0 0; }
+  nav.tabs a { flex: none; display: flex; align-items: center; gap: 12px; text-align: left; padding: 14px 20px; font-size: 13px; border-top: 0; border-left: 3px solid transparent; margin-top: 0; }
+  nav.tabs a svg { margin: 0; }
+  nav.tabs a.on { border-left-color: var(--accent); background: var(--bg); }
+  nav.tabs a .bolha { position: static; margin-left: auto; }
+  main { max-width: 1100px; padding: 20px 28px; }
+  .sticky-foot { bottom: 0; }
+  .toast { bottom: 28px; }
+  .kpis.k4 { grid-template-columns: repeat(4, 1fr); }
+  .lado { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+}
+@media print {
+  @page { margin: 14mm; }
+  body { padding: 0 !important; background: #fff; color: #000; font-size: 12px; }
+  nav.tabs, header.top, .noprint, .toast { display: none !important; }
+  .so-print { display: block; }
+  main { max-width: none; padding: 0; }
+  .card, .kpi { border-color: #bbb; break-inside: avoid; }
+  .barra { background: #043865; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<header class="top" id="top"></header>
+<main id="app"></main>
+<nav class="tabs" id="tabs"></nav>
+<dialog id="dlg"></dialog>
+<input type="file" id="arqBackup" accept="application/json,.json" hidden>
+
+<script>
+'use strict';
+/* =========================================================================
+   Materiais — gestão de materiais da equipe de manutenção de vagões
+   (consumíveis, peças de reposição e EPI). App irmão da Ferramentaria:
+   mesmos logins e níveis de acesso, mesma nuvem (tabelas mat_*).
+   Fluxo: a equipe CONTA o estoque → o app calcula o consumo → na análise semanal
+   o programador gera a RESERVA (padrão − saldo − já reservado) → registra o recebimento.
+   Local primeiro: grava no aparelho na hora e sincroniza quando há internet.
+   ========================================================================= */
+
+const CHAVE = 'materiais_v1';
+const TIPOS = ['Consumível', 'Peça de reposição', 'EPI'];
+const STATUS_RES = { aberta: 'Aberta', parcial: 'Recebida em parte', recebida: 'Recebida', encerrada: 'Encerrada' };
+const DIAS_CONTAGEM_VELHA = 7;
+
+/* ---------- Armazenamento ---------- */
+let versao = 0;  // muda a cada alteração: invalida o cálculo de saldos
+const DB = {
+  dados: null,
+  vazio() {
+    return {
+      versao: 3,
+      dispositivo: uid(),
+      // caixas = [{id, numero, posto, ativa}]; equipe = ["Nome; CS123"]
+      config: { unidade: '', caixas: Array.from({ length: 10 }, (_, k) => ({ id: 'cx' + p2(k + 1), numero: p2(k + 1), posto: '', ativa: true })), turnos: ['Turno A', 'Turno B', 'Turno C'], equipe: [],
+        unidades: ['un', 'par', 'cx', 'pct', 'kg', 'm', 'L', 'rolo'] },
+      itens: [],      // {id, codigo, nome, tipo, unidade, minimo, maximo, custo, ca, caValidade, obs, ativo, criadoEm, atualizadoEm} — todo item ativo existe em todas as caixas
+      contagens: [],  // {id, caixaId, caixa, posto, turno, responsavel, matricula, iniciadaEm, fechadaEm, por, linhas:[{itemId, codigo, nome, unidade, anterior, contado, custo}], estorno?}
+      reservas: [],   // {id, numero, criadaEm, por, obs, status, linhas:[{itemId, codigo, nome, unidade, qtd, recebido, custo, caixas:{caixaId: qtd}, recCaixas:{caixaId: qtd}}]}
+      movs: [],       // abastecimento de caixa: {id, itemId, caixaId, tipo:'entrada', qtd, custo, reservaId, doc, obs, por, em, estorno?}
+      rascunho: null  // contagem em andamento: fica só neste aparelho
+    };
+  },
+  carregar() {
+    try { this.dados = JSON.parse(localStorage.getItem(CHAVE)); } catch (e) { this.dados = null; }
+    if (!this.dados || !this.dados.versao) this.dados = this.vazio();
+    this.dados.config = Object.assign(this.vazio().config, this.dados.config || {});
+    for (const k of ['itens', 'contagens', 'reservas', 'movs']) if (!Array.isArray(this.dados[k])) this.dados[k] = [];
+    if (!Array.isArray(this.dados.config.caixas)) this.dados.config.caixas = [];
+    // versões de teste anteriores (sem caixas): material com padrão vira máximo
+    delete this.dados.carrinho; delete this.dados.config.setores;
+    for (const i of this.dados.itens) if (i.maximo == null) { i.maximo = Number(i.padrao) || 0; i.minimo = Number(i.minimo) || 0; delete i.padrao; }
+    this.dados.versao = 3;
+    versao++;
+  },
+  salvar(semEnviar) {
+    versao++;
+    try { localStorage.setItem(CHAVE, JSON.stringify(this.dados)); }
+    catch (e) { alert('Não foi possível salvar no aparelho: ' + e.message); }
+    if (!semEnviar) Nuvem.agendar();
+  }
+};
+
+function uid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
+const agora = () => new Date().toISOString();
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = (s, el = document) => el.querySelector(s);
+const p2 = (n) => String(n).padStart(2, '0');
+function fmt(ts, comAno) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return `${p2(d.getDate())}/${p2(d.getMonth() + 1)}${comAno ? '/' + d.getFullYear() : ''} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+}
+const fmtDia = (ts) => (ts ? fmt(ts, true).slice(0, 10) : '');
+function fmtData(s) { if (!s) return ''; const [a, m, d] = s.slice(0, 10).split('-'); return `${d}/${m}/${a}`; }
+function hoje() { const d = new Date(); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+const diasDesde = (ts) => Math.floor((Date.now() - new Date(ts)) / 86400000);
+const r3 = (x) => Math.round(x * 1000) / 1000;
+// Aceita "1,5" e "1.5"
+function num(v) { if (v == null) return NaN; const s = String(v).trim().replace(/\s/g, '').replace(',', '.'); return s === '' ? NaN : Number(s); }
+const fq = (x) => Number(x || 0).toLocaleString('pt-BR', { maximumFractionDigits: 3 });
+const brl = (x) => Number(x || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach((x) => x.remove());
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+function vibrar(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+const quem = () => (Nuvem.sessao && Nuvem.sessao.email) || 'este aparelho';
+
+/* ---------- Regras de negócio ---------- */
+const D = () => DB.dados;
+const itemPorId = (id) => D().itens.find((i) => i.id === id);
+const ativos = () => D().itens.filter((i) => i.ativo !== false).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+const caixas = () => D().config.caixas.filter((c) => c.ativa !== false);
+const caixaPorId = (id) => D().config.caixas.find((c) => c.id === id);
+const nomeCaixa = (c) => (c ? `Caixa ${c.numero}${c.posto ? ' · ' + c.posto : ''}` : 'Caixa removida');
+const supervisor = () => !Nuvem.ativa() || Nuvem.sessao.papel === 'supervisor';
+const SO_SUPERVISOR = new Set(['novo-item', 'editar-item', 'abastecer', 'importar', 'desativar', 'reativar', 'estornar', 'estornar-cont',
+  'gerar-reserva', 'receber', 'numero-res', 'encerrar-res', 'salvar-cfg', 'backup', 'restaurar', 'apagar', 'sair']);
+const contagensValidas = () => D().contagens.filter((c) => !c.estorno);
+const K = (cx, it) => cx + '|' + it;
+
+// Saldo de cada material EM CADA CAIXA = última contagem da caixa + abastecimentos registrados depois dela.
+// Reservado = o que foi pedido para a caixa em reservas abertas e ainda não chegou.
+let _calc = null, _calcV = -1;
+function calc() {
+  if (_calcV === versao) return _calc;
+  const ult = {}, ultCx = {};
+  for (const c of contagensValidas().sort((a, b) => (a.fechadaEm < b.fechadaEm ? -1 : 1))) {
+    ultCx[c.caixaId] = c;
+    for (const l of c.linhas) ult[K(c.caixaId, l.itemId)] = { contado: l.contado, em: c.fechadaEm, turno: c.turno };
+  }
+  const saldo = {};
+  for (const [k, u] of Object.entries(ult)) saldo[k] = u.contado;
+  for (const m of D().movs) {
+    if (m.estorno || !m.caixaId) continue;
+    const k = K(m.caixaId, m.itemId), u = ult[k];
+    if (!u || m.em > u.em) saldo[k] = (saldo[k] || 0) + m.qtd;
+  }
+  for (const k in saldo) saldo[k] = r3(saldo[k]);
+  const pend = {};
+  for (const r of D().reservas) {
+    if (r.status !== 'aberta' && r.status !== 'parcial') continue;
+    for (const l of r.linhas) for (const [cx, q] of Object.entries(l.caixas || {})) {
+      const f = Math.max(0, q - ((l.recCaixas || {})[cx] || 0));
+      if (f) pend[K(cx, l.itemId)] = r3((pend[K(cx, l.itemId)] || 0) + f);
+    }
+  }
+  _calc = { ult, ultCx, saldo, pend }; _calcV = versao;
+  return _calc;
+}
+const saldo = (cx, id) => calc().saldo[K(cx, id)] || 0;
+const pendente = (cx, id) => calc().pend[K(cx, id)] || 0;
+const ultContagem = (cx, id) => calc().ult[K(cx, id)];
+const ultContagemCaixa = (cx) => calc().ultCx[cx];
+const caixaVelha = (cx) => { const u = ultContagemCaixa(cx); return !u || diasDesde(u.fechadaEm) > DIAS_CONTAGEM_VELHA; };
+// Regra da reserva: sempre completa até o máximo (o mínimo é só alerta). Caixa nunca contada fica de fora.
+function sugestao(cx, i) {
+  if (!ultContagem(cx, i.id) && !D().movs.some((m) => m.caixaId === cx && m.itemId === i.id && !m.estorno)) return 0;
+  return Math.max(0, r3((Number(i.maximo) || 0) - saldo(cx, i.id) - pendente(cx, i.id)));
+}
+const sugestaoPorCaixa = (i, lista = caixas()) => { const o = {}; for (const c of lista) { const q = sugestao(c.id, i); if (q > 0) o[c.id] = q; } return o; };
+const soma = (o) => r3(Object.values(o).reduce((s, x) => s + x, 0));
+const saldoTotal = (i) => r3(caixas().reduce((s, c) => s + saldo(c.id, i.id), 0));
+const abaixoMin = (cx, i) => Number(i.minimo) > 0 && !!ultContagem(cx, i.id) && saldo(cx, i.id) < Number(i.minimo);
+const caVencido = (i) => i.tipo === 'EPI' && i.caValidade && i.caValidade < hoje();
+const qtdUn = (q, i) => `${fq(q)} <small>${esc((i && i.unidade) || 'un')}</small>`;
+function sugerirTurno() {
+  const h = new Date().getHours();
+  const t = D().config.turnos;
+  if (t.length === 3) return h >= 6 && h < 14 ? t[0] : h >= 14 && h < 22 ? t[1] : t[2];
+  return t[0] || '';
+}
+const semAcento = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+function busca(q, lista) {
+  const p = semAcento(q.trim()).split(/\s+/).filter(Boolean);
+  if (!p.length) return lista;
+  return lista.filter((i) => { const t = semAcento(i.nome + ' ' + (i.codigo || '') + ' ' + (i.tipo || '')); return p.every((w) => t.includes(w)); });
+}
+const ultimaReserva = () => D().reservas.reduce((u, r) => (!u || r.criadaEm > u.criadaEm ? r : u), null);
+const reservasAbertas = () => D().reservas.filter((r) => r.status === 'aberta' || r.status === 'parcial').sort((a, b) => (b.criadaEm > a.criadaEm ? 1 : -1));
+const custoItem = (id) => Number((itemPorId(id) || {}).custo) || 0;
+// Equipe: "Nome; CS123" → {nome, matricula}
+const pessoa = (s) => { const [nome, mat] = String(s).split(/[;\t]/).map((x) => x.trim()); return { nome, matricula: mat || '' }; };
+
+const LOGO_RUMO = '<svg class="logo" role="img" aria-label="Rumo" viewBox="0 0 114 27" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#rumoClip)"><path fill-rule="evenodd" clip-rule="evenodd" d="M-0.000109514 25.8154H6.38353V16.8099C6.38353 13.2851 6.38368 6.80642 11.575 6.80642C12.555 6.76208 13.5326 6.94121 14.4332 7.33025V0.898625C13.7942 0.744051 13.1365 0.680374 12.4797 0.7095C8.66906 0.7095 6.0482 4.56636 5.76143 6.85348H5.66735V1.28217H-0.000976562L-0.000109514 25.8154Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M40.9186 1.28235H34.5323V13.2853C34.5323 16.431 33.5334 21.4332 28.9121 21.4332C24.8164 21.4332 24.7668 17.3827 24.7668 14.3809V1.28235H18.3831V16.7639C18.3831 22.2882 20.907 26.3856 26.7181 26.3856C28.2686 26.3872 29.7996 26.0364 31.1946 25.3596C32.5897 24.6828 33.8127 23.6978 34.7712 22.479H34.8679V25.8156H40.9194L40.9186 1.28235Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M47.3903 25.8154H53.7748V13.9039C53.7748 10.7129 54.2971 5.66188 58.5357 5.66188C62.2061 5.66188 62.206 8.90079 62.206 11.1906V25.8154H68.5896V13.9039C68.5896 10.7129 69.111 5.66188 73.3523 5.66188C77.0191 5.66188 77.019 8.90079 77.019 11.1906V25.8154H83.4035V10.332C83.4035 4.85394 81.6837 0.709413 75.6374 0.709413C74.0833 0.652283 72.5441 1.02725 71.1903 1.79261C69.8365 2.55798 68.7215 3.68376 67.9692 5.04483C66.5851 1.99415 64.1566 0.709413 60.7268 0.709413C59.2736 0.709517 57.844 1.0762 56.5701 1.7755C55.2963 2.47481 54.2194 3.48415 53.4392 4.71011H53.3434V1.28208H47.3894L47.3903 25.8154Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M104.735 6.86688L103.078 8.27591C101.777 7.69466 100.368 7.39511 98.9428 7.39693C97.4051 7.41166 95.8906 7.76951 94.5087 8.44435C93.1269 9.11918 91.9127 10.094 90.9556 11.2976C89.9985 12.5013 89.3223 13.9034 88.9761 15.4018C88.6299 16.9001 88.6224 18.4568 88.9544 19.9583C87.8765 18.0161 87.3174 15.8288 87.3313 13.6075C87.3313 7.29306 91.1497 2.17456 96.9607 2.17456C98.551 2.22071 100.102 2.67695 101.464 3.49907C102.826 4.32119 103.953 5.48128 104.735 6.86688Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M114 12.5331C114 16.3287 111.822 19.2223 108.368 20.7955L105.437 16.5507C106.492 14.934 107.054 13.045 107.054 11.1143C106.997 8.33273 105.839 5.6874 103.833 3.75969C101.827 1.83198 99.1373 0.779604 96.3556 0.833838H96.2724C97.6492 0.408752 99.077 0.173962 100.517 0.135986C107.965 0.136874 114 6.27818 114 12.5331Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M112.813 19.1024C111.15 23.1706 106.369 26.9324 100.43 26.9324C94.1115 26.9324 89.9313 22.6707 89.9313 17.4199C89.9329 16.1601 90.2278 14.918 90.7931 13.7921L95.157 14.7617C95.7785 19.3501 100.474 22.7834 105.139 22.7834C106.599 22.7133 108.031 22.3515 109.349 21.7193C110.667 21.087 111.844 20.1972 112.813 19.1024Z" fill="currentColor"/></g><defs><clipPath id="rumoClip"><rect width="114" height="26.7955" fill="white" transform="translate(0 0.136963)"/></clipPath></defs></svg>';
+
+/* ---------- Navegação ---------- */
+const SVG = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICONES = {
+  inicio: SVG('<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'),
+  contar: SVG('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v3h6V3"/><path d="M9 13l2 2 4-4"/>'),
+  reserva: SVG('<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h8M9 17h5"/>'),
+  materiais: SVG('<path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>'),
+  relatorios: SVG('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+  ajustes: SVG('<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>')
+};
+const ABAS = [['inicio', 'Caixas'], ['contar', 'Contar'], ['reserva', 'Reserva'], ['materiais', 'Materiais'], ['relatorios', 'Relatórios']];
+
+function ir(h) { location.hash = h; }
+function rota() {
+  const [nome, arg] = (location.hash.slice(1) || 'inicio').split('/');
+  return { nome, arg: arg ? decodeURIComponent(arg) : '' };
+}
+function topo(titulo, voltar) {
+  const u = D().config.unidade;
+  $('#top').innerHTML = `${voltar ? '<button data-a="voltar" aria-label="Voltar">‹</button>' : LOGO_RUMO + '<span class="divisor"></span>'}
+    <h1>${esc(titulo)}${u ? `<span class="sub">${esc(u)}</span>` : ''}</h1>
+    ${Nuvem.ativa() ? '<button class="sinc" id="sincSt" data-a="sinc-info" aria-label="Situação da nuvem"></button>' : ''}
+    <a class="engr" href="#ajustes" aria-label="${supervisor() ? 'Ajustes' : 'Conta'}">${ICONES.ajustes}</a>`;
+  Nuvem.mostrar();
+}
+function render() {
+  if (Nuvem.precisaLogin()) return telaLogin();
+  const r = rota();
+  const aba = { item: 'materiais', res: 'reserva', contagem: 'contar', caixa: 'inicio' }[r.nome] || r.nome;
+  $('#tabs').innerHTML = ABAS.map(([k, n]) => `<a href="#${k}" class="${k === aba ? 'on' : ''}">${ICONES[k]}${n}${k === 'contar' && D().rascunho ? '<span class="bolha">•</span>' : ''}</a>`).join('')
+    + `<a href="#ajustes" class="so-pc ${aba === 'ajustes' ? 'on' : ''}">${ICONES.ajustes}${supervisor() ? 'Ajustes' : 'Conta'}</a>`;
+  (VIEWS[r.nome] || VIEWS.inicio)(r.arg);
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Telas ---------- */
+const VIEWS = {};
+
+// Início = visão das caixas
+VIEWS.inicio = () => {
+  topo('Caixas de materiais');
+  const itens = ativos(), cxs = caixas();
+  const sup = supervisor();
+  if (!cxs.length || !itens.length) {
+    $('#app').innerHTML = `<div class="status neutral"><div class="big">Configuração inicial</div><div class="muted">${sup ? 'Importe a lista de materiais das caixas em Materiais.' : 'O supervisor ainda não cadastrou as caixas e os materiais.'}</div></div>
+      ${sup ? `<div class="stack">${!cxs.length ? '<button class="btn big primary" data-a="ir" data-h="ajustes">Cadastrar caixas</button>' : ''}${!itens.length ? '<button class="btn big primary" data-a="importar">Importar lista de materiais</button>' : ''}</div>` : ''}`;
+    return;
+  }
+  const velhas = cxs.filter((c) => caixaVelha(c.id));
+  const nAbaixo = cxs.reduce((s, c) => s + itens.filter((i) => abaixoMin(c.id, i)).length, 0);
+  const abertas = reservasAbertas();
+  const ultR = ultimaReserva();
+  const status = velhas.length
+    ? `<div class="status bad"><div class="big">⚠ ${velhas.length} caixa${velhas.length > 1 ? 's' : ''} sem contagem recente</div><div>${velhas.map((c) => 'Caixa ' + esc(c.numero)).join(', ')}. Conte antes da análise semanal.</div></div>`
+    : `<div class="status ok"><div class="big">✓ Todas as caixas contadas</div><div>Nos últimos ${DIAS_CONTAGEM_VELHA} dias.</div></div>`;
+  $('#app').innerHTML = `
+    ${status}
+    <div class="kpis">
+      <div class="kpi"><b>${cxs.length}</b><span>caixas · ${itens.length} itens cada</span></div>
+      <div class="kpi"><b style="color:${nAbaixo ? 'var(--bad)' : 'inherit'}">${nAbaixo}</b><span>itens abaixo do mínimo</span></div>
+      <div class="kpi"><b>${abertas.length}</b><span>reservas em aberto</span></div>
+    </div>
+    <button class="btn big primary" data-a="ir" data-h="contar">${D().rascunho ? 'Continuar contagem em andamento' : 'Contar uma caixa'}</button>
+    ${sup ? `<div class="card row" style="margin-top:12px"><div class="grow"><b>Análise semanal da reserva</b>
+      <div class="small muted">${ultR ? `Última reserva: ${fmtDia(ultR.criadaEm)} (há ${diasDesde(ultR.criadaEm)} dia${diasDesde(ultR.criadaEm) === 1 ? '' : 's'})` : 'Nenhuma reserva gerada ainda'}</div></div>
+      <button class="btn" data-a="ir" data-h="reserva">Abrir</button></div>` : ''}
+    <div class="group-h">Caixas</div>
+    <div class="grade">${cxs.map((c) => {
+      const u = ultContagemCaixa(c.id);
+      const ab = itens.filter((i) => abaixoMin(c.id, i)).length;
+      const vel = caixaVelha(c.id);
+      return `<a class="cx ${ab ? 'bad' : ''}" href="#caixa/${encodeURIComponent(c.id)}"><div class="n">${esc(c.numero)}</div>
+        ${c.posto ? `<div class="p">${esc(c.posto)}</div>` : ''}
+        <div class="s" style="color:${vel ? 'var(--warn)' : 'var(--muted)'}">${u ? 'contada ' + fmtDia(u.fechadaEm) : 'nunca contada'}</div>
+        ${ab ? `<span class="tag bad">${ab} abaixo do mín.</span>` : u ? '<span class="tag ok">ok</span>' : ''}</a>`; }).join('')}</div>
+    ${abertas.length ? `<div class="group-h">Reservas em aberto</div><div class="list">${abertas.slice(0, 6).map(linhaReserva).join('')}</div>` : ''}`;
+};
+function linhaReserva(r) {
+  const n = r.linhas.length;
+  const tag = r.status === 'recebida' ? 'ok' : r.status === 'encerrada' ? '' : 'warn';
+  return `<a class="li" href="#res/${encodeURIComponent(r.id)}"><div class="grow"><div class="t">Reserva ${r.numero ? 'nº ' + esc(r.numero) : 'sem nº'}</div>
+    <div class="s">${fmtDia(r.criadaEm)} · ${n} ite${n > 1 ? 'ns' : 'm'} · ${esc(r.por || '')}</div></div><span class="tag ${tag}">${STATUS_RES[r.status]}</span></a>`;
+}
+
+VIEWS.caixa = (id) => {
+  const c = caixaPorId(id);
+  topo(c ? 'Caixa ' + c.numero : 'Caixa', true);
+  if (!c) { $('#app').innerHTML = '<div class="empty">Caixa não encontrada.</div>'; return; }
+  const u = ultContagemCaixa(c.id);
+  const hist = D().contagens.filter((x) => x.caixaId === c.id).sort((a, b) => (b.fechadaEm > a.fechadaEm ? 1 : -1)).slice(0, 15);
+  $('#app').innerHTML = `
+    <div class="card"><div class="row"><div class="grow"><div style="font-size:20px;font-weight:800;color:var(--title)">${esc(nomeCaixa(c))}</div>
+      <div class="small muted">${u ? `Última contagem: ${fmt(u.fechadaEm, true)} · ${esc(u.responsavel)}${u.matricula ? ' (' + esc(u.matricula) + ')' : ''}` : 'Ainda não contada'}</div></div></div></div>
+    <div class="row wrap" style="margin-bottom:12px"><button class="btn primary grow" data-a="contar-caixa" data-c="${c.id}">Contar esta caixa</button>
+      ${supervisor() ? `<button class="btn grow" data-a="abastecer" data-c="${c.id}">Abastecimento avulso</button>` : ''}</div>
+    <div class="card" style="padding:6px 8px"><div class="tw"><table class="tb"><thead><tr><th>Material</th><th class="n">Saldo</th><th class="n">Mín.</th><th class="n">Máx.</th><th class="n">Repor</th></tr></thead><tbody>
+      ${ativos().map((i) => { const s = saldo(c.id, i.id), cont = ultContagem(c.id, i.id); return `<tr><td><a href="#item/${encodeURIComponent(i.id)}">${esc(i.nome)}</a><div class="small muted">${esc(i.codigo || '')}${pendente(c.id, i.id) ? ' · reservado ' + fq(pendente(c.id, i.id)) : ''}</div></td>
+        <td class="n" ${abaixoMin(c.id, i) ? 'style="color:var(--bad);font-weight:800"' : ''}>${cont || s ? fq(s) : '—'}</td><td class="n">${fq(i.minimo)}</td><td class="n">${fq(i.maximo)}</td><td class="n">${sugestao(c.id, i) ? '<b>' + fq(sugestao(c.id, i)) + '</b>' : '—'}</td></tr>`; }).join('')}
+    </tbody></table></div></div>
+    ${hist.length ? `<div class="group-h">Contagens desta caixa</div><div class="list">${hist.map(linhaContagemHist).join('')}</div>` : ''}`;
+};
+function linhaContagemHist(c) {
+  return `<a class="li ${c.estorno ? 'est' : ''}" href="#contagem/${encodeURIComponent(c.id)}"><div class="grow"><div class="t">Caixa ${esc(c.caixa)}${c.posto ? ' · ' + esc(c.posto) : ''}</div>
+    <div class="s">${fmt(c.fechadaEm, true)} · ${esc(c.turno)} · ${esc(c.responsavel)}${c.matricula ? ' (' + esc(c.matricula) + ')' : ''}${c.estorno ? ' · <b style="color:var(--bad)">estornada</b>' : ''}</div></div>
+    <span class="tag">${brlOuQtd(consumoContagem(c))}</span></a>`;
+}
+
+/* --- Contagem (uma caixa por vez, como no formulário em papel) --- */
+VIEWS.contar = (arg) => {
+  topo('Contagem de caixa');
+  if (!ativos().length || !caixas().length) { $('#app').innerHTML = '<div class="empty">Cadastre caixas e materiais antes de contar.</div>'; return; }
+  if (!D().rascunho) return telaInicioContagem(arg);
+  telaContagem();
+};
+function telaInicioContagem(caixaPre) {
+  const cfg = D().config;
+  const hist = contagensValidas().sort((a, b) => (b.fechadaEm > a.fechadaEm ? 1 : -1)).slice(0, 10);
+  $('#app').innerHTML = `
+    <div class="card stack">
+      <div><label class="f">Caixa</label><div class="chips" id="cCaixa">${caixas().map((c) => `<button data-v="${c.id}" class="${c.id === caixaPre ? 'on' : ''}">${esc(c.numero)}${c.posto ? ' · ' + esc(c.posto) : ''}${caixaVelha(c.id) ? ' •' : ''}</button>`).join('')}</div>
+        <div class="small muted">• = sem contagem nos últimos ${DIAS_CONTAGEM_VELHA} dias</div></div>
+      <div><label class="f">Turno</label><div class="chips" id="cTurno">${cfg.turnos.map((t) => `<button data-v="${esc(t)}" class="${t === sugerirTurno() ? 'on' : ''}">${esc(t)}</button>`).join('')}</div></div>
+      ${cfg.equipe.length ? `<div><label class="f" for="cResp">Quem está contando</label><select id="cResp"><option value="">Selecione…</option>${cfg.equipe.map((p) => { const x = pessoa(p); return `<option value="${esc(p)}">${esc(x.nome)}${x.matricula ? ' — ' + esc(x.matricula) : ''}</option>`; }).join('')}<option value="__outro">Outra pessoa…</option></select></div>` : ''}
+      <div class="g2" id="cOutro" ${cfg.equipe.length ? 'style="display:none"' : ''}><div><label class="f" for="cNome">Nome</label><input id="cNome" autocomplete="name"></div>
+        <div><label class="f" for="cMat">Matrícula</label><input id="cMat" placeholder="CS…" autocapitalize="characters"></div></div>
+      <button class="btn big primary" data-a="iniciar-cont">Começar contagem</button>
+    </div>
+    ${hist.length ? `<div class="group-h">Contagens recentes</div><div class="list">${hist.map(linhaContagemHist).join('')}</div>` : ''}`;
+  for (const id of ['#cCaixa', '#cTurno']) { const g = $(id); g.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; [...g.children].forEach((x) => x.classList.toggle('on', x === b)); }); }
+  const sel = $('#cResp'); if (sel) sel.addEventListener('change', () => { $('#cOutro').style.display = sel.value === '__outro' ? '' : 'none'; });
+}
+let filtroCont = '';
+function telaContagem() {
+  const r = D().rascunho;
+  const itens = ativos();
+  const vis = busca(filtroCont, itens);
+  const contados = itens.filter((i) => r.contagens[i.id] != null).length;
+  $('#app').innerHTML = `
+    <div class="card">
+      <div class="row"><div class="grow"><b>${esc(nomeCaixa(caixaPorId(r.caixaId)))}</b><div class="small muted">${esc(r.turno)} · ${esc(r.responsavel)}${r.matricula ? ' (' + esc(r.matricula) + ')' : ''} · iniciada ${fmt(r.iniciadaEm)}</div></div>
+      <button class="btn danger" data-a="cancelar-cont">Descartar</button></div>
+      <div class="progress"><i style="width:${(contados / itens.length) * 100}%"></i></div>
+      <div class="small muted" id="progTxt">${contados} de ${itens.length} materiais contados</div>
+    </div>
+    ${itens.length > 15 ? `<input id="fCont" type="search" placeholder="Buscar material ou código" value="${esc(filtroCont)}" style="margin-bottom:6px">` : ''}
+    <div class="list">${vis.map((i) => linhaContagem(i, r)).join('') || '<div class="empty">Nada encontrado.</div>'}</div>
+    <div class="sticky-foot"><button class="btn big primary" data-a="fechar-cont">Encerrar contagem</button></div>`;
+  const f = $('#fCont');
+  if (f) f.addEventListener('input', () => { filtroCont = f.value; const pos = f.selectionStart; telaContagem(); const n = $('#fCont'); n.focus(); n.setSelectionRange(pos, pos); });
+}
+function linhaContagem(i, r) {
+  const ant = saldo(r.caixaId, i.id);
+  const teve = !!ultContagem(r.caixaId, i.id);
+  const c = r.contagens[i.id];
+  const temC = c != null;
+  const cons = temC ? r3(ant - c) : 0;
+  let tag = '<span class="tag">a contar</span>';
+  if (temC) tag = Number(i.minimo) && c < i.minimo ? '<span class="tag bad">abaixo do mínimo</span>' : teve && cons > 0 ? `<span class="tag">usou ${fq(cons)}</span>` : teve && cons < 0 ? `<span class="tag warn">+${fq(-cons)}</span>` : '<span class="tag ok">ok</span>';
+  return `<div class="cnt" data-item="${i.id}">
+    <div class="top"><div class="grow"><div class="t">${esc(i.nome)}</div>
+      <div class="s">${i.codigo ? 'SAP ' + esc(i.codigo) + ' · ' : ''}${teve ? `anterior <b>${fq(ant)}</b>` : 'primeira contagem'} · mín. ${fq(i.minimo)} · máx. ${fq(i.maximo)}</div></div>${tag}</div>
+    <div class="ctl" style="margin-top:10px">
+      <button data-a="menos" aria-label="Diminuir">−</button>
+      <input inputmode="decimal" value="${temC ? fq(c) : ''}" placeholder="—" data-cq="${i.id}" aria-label="Quantidade contada">
+      <button data-a="mais" aria-label="Aumentar">+</button>
+      ${teve ? `<button class="same" data-a="igual">= ${fq(ant)}</button>` : ''}
+    </div></div>`;
+}
+function setContagem(itemId, valor) {
+  const r = D().rascunho;
+  const v = num(valor);
+  if (isNaN(v) || v < 0) delete r.contagens[itemId]; else r.contagens[itemId] = r3(v);
+  DB.salvar(true);
+  const el = document.querySelector(`.cnt[data-item="${CSS.escape(itemId)}"]`);
+  if (el && !setContagem.trava) {
+    setContagem.trava = true;
+    const n = document.createElement('div'); n.innerHTML = linhaContagem(itemPorId(itemId), r);
+    try { el.replaceWith(n.firstElementChild); } finally { setContagem.trava = false; }
+  }
+  const itens = ativos();
+  const contados = itens.filter((i) => r.contagens[i.id] != null).length;
+  $('.progress i').style.width = (contados / itens.length) * 100 + '%';
+  $('#progTxt').textContent = `${contados} de ${itens.length} materiais contados`;
+}
+function fecharContagem() {
+  const r = D().rascunho;
+  const itens = ativos();
+  const falt = itens.filter((i) => r.contagens[i.id] == null);
+  if (falt.length) {
+    vibrar(200);
+    return modal({ titulo: 'Contagem incompleta', ok: 'Voltar à contagem', cancelar: null,
+      corpo: `<p>Ainda falta${falt.length > 1 ? 'm' : ''} <b>${falt.length}</b> ite${falt.length > 1 ? 'ns' : 'm'}. Conte todos os itens da caixa (se não tiver nenhum, informe 0):</p><div class="small">${falt.slice(0, 15).map((i) => '• ' + esc(i.nome)).join('<br>')}</div>` });
+  }
+  const cx = caixaPorId(r.caixaId);
+  const c = { id: r.id, caixaId: r.caixaId, caixa: cx.numero, posto: cx.posto || '', turno: r.turno, responsavel: r.responsavel, matricula: r.matricula || '',
+    iniciadaEm: r.iniciadaEm, fechadaEm: agora(), por: quem(),
+    linhas: itens.map((i) => ({ itemId: i.id, codigo: i.codigo || '', nome: i.nome, unidade: i.unidade, anterior: ultContagem(r.caixaId, i.id) || saldo(r.caixaId, i.id) ? saldo(r.caixaId, i.id) : null, contado: r.contagens[i.id], custo: Number(i.custo) || 0 })) };
+  D().contagens.push(c);
+  D().rascunho = null; filtroCont = '';
+  DB.salvar(); vibrar(80);
+  ir('contagem/' + encodeURIComponent(c.id));
+}
+// Consumo = anterior − contado (sem anterior = primeira contagem da caixa, não há consumo)
+const consumoLinha = (l) => (l.anterior == null ? 0 : r3(l.anterior - l.contado));
+function consumoContagem(c) {
+  let qtd = 0, valor = 0;
+  for (const l of c.linhas) { const x = consumoLinha(l); if (x > 0) { qtd += x; valor += x * (l.custo || 0); } }
+  return { qtd, valor };
+}
+const temCusto = () => D().itens.some((i) => Number(i.custo) > 0);
+const brlOuQtd = (x) => (temCusto() ? brl(x.valor) : `${fq(x.qtd)} peça${x.qtd === 1 ? '' : 's'} usada${x.qtd === 1 ? '' : 's'}`);
+
+VIEWS.contagem = (id) => {
+  const c = D().contagens.find((x) => x.id === id);
+  topo('Contagem', true);
+  if (!c) { $('#app').innerHTML = '<div class="empty">Contagem não encontrada.</div>'; return; }
+  const cons = consumoContagem(c);
+  const abaixo = c.linhas.filter((l) => { const i = itemPorId(l.itemId); return i && Number(i.minimo) && l.contado < i.minimo; });
+  $('#app').innerHTML = `
+    ${c.estorno ? `<div class="status bad"><div class="big">Contagem estornada</div><div>por ${esc(c.estorno.por)} em ${fmt(c.estorno.em)}: ${esc(c.estorno.motivo)}</div></div>`
+      : `<div class="status ${abaixo.length ? 'bad' : 'ok'}"><div class="big">${abaixo.length ? `⚠ ${abaixo.length} ite${abaixo.length > 1 ? 'ns' : 'm'} abaixo do mínimo` : '✓ Contagem registrada'}</div><div><b>Caixa ${esc(c.caixa)}</b>${c.posto ? ' · ' + esc(c.posto) : ''} · ${esc(c.turno)} · ${fmt(c.fechadaEm, true)} · ${esc(c.responsavel)}${c.matricula ? ' (' + esc(c.matricula) + ')' : ''}</div></div>`}
+    <div class="row wrap" style="margin-bottom:12px">
+      <button class="btn grow" data-a="compartilhar-cont" data-c="${c.id}">Compartilhar</button>
+      ${supervisor() && !c.estorno ? `<button class="btn danger grow" data-a="estornar-cont" data-c="${c.id}">Estornar</button>` : ''}
+    </div>
+    <div class="card" style="padding:6px 8px"><div class="tw"><table class="tb"><thead><tr><th>Material</th><th class="n pc">Anterior</th><th class="n">Contado</th><th class="n">Usado</th><th class="n pc">Mín./Máx.</th></tr></thead><tbody>
+      ${c.linhas.map((l) => { const i = itemPorId(l.itemId) || {}; const x = consumoLinha(l); const bx = Number(i.minimo) && l.contado < i.minimo; return `<tr><td>${esc(l.nome)}${l.codigo ? `<div class="small muted">${esc(l.codigo)}</div>` : ''}</td>
+        <td class="n pc">${l.anterior == null ? '—' : fq(l.anterior)}</td><td class="n" ${bx ? 'style="color:var(--bad)"' : ''}><b>${fq(l.contado)}</b></td>
+        <td class="n">${x > 0 ? fq(x) : x < 0 ? `<span style="color:var(--warn)">+${fq(-x)}</span>` : '—'}</td><td class="n small pc">${fq(i.minimo)} / ${fq(i.maximo)}</td></tr>`; }).join('')}
+    </tbody></table></div><p class="small muted" style="margin-bottom:0">Registrada por ${esc(c.por || '—')}. Valor com “+” = havia mais do que o anterior (abastecimento não lançado ou erro na contagem anterior).${temCusto() ? ' Consumo: ' + brl(cons.valor) + '.' : ''}</p></div>`;
+};
+function textoContagem(c) {
+  const u = D().config.unidade;
+  const baixo = c.linhas.filter((l) => { const i = itemPorId(l.itemId); return i && Number(i.minimo) && l.contado < i.minimo; });
+  return [`*Contagem — Caixa ${c.caixa}${c.posto ? ' · ' + c.posto : ''}*${u ? ' — ' + u : ''}`, `${fmt(c.fechadaEm, true)} · ${c.turno} · ${c.responsavel}${c.matricula ? ' (' + c.matricula + ')' : ''}`, '',
+    ...c.linhas.map((l) => `• ${fq(l.contado)} — ${l.nome}${consumoLinha(l) > 0 ? ` (usou ${fq(consumoLinha(l))})` : ''}`),
+    ...(baixo.length ? ['', `⚠ Abaixo do mínimo: ${baixo.map((l) => l.nome).join(', ')}`] : [])].join('\n');
+}
+
+/* --- Reserva (análise semanal) --- */
+let sugEditada = {};  // total por material alterado à mão na análise (até gerar)
+// Divide o total pedido entre as caixas: primeiro o que cada caixa precisa; o que sobrar fica "sem caixa" (estoque)
+function distribuir(total, porCaixa) {
+  const o = {}; let resto = r3(total);
+  for (const [cx, q] of Object.entries(porCaixa)) { if (resto <= 0) break; const x = Math.min(q, resto); o[cx] = r3(x); resto = r3(resto - x); }
+  if (resto > 0) o._estoque = resto;
+  return o;
+}
+VIEWS.reserva = () => {
+  topo('Reserva');
+  const sup = supervisor();
+  const ultR = ultimaReserva();
+  const itens = ativos();
+  const cxs = caixas();
+  const nunca = cxs.filter((c) => !ultContagemCaixa(c.id));
+  const velhas = cxs.filter((c) => ultContagemCaixa(c.id) && caixaVelha(c.id));
+  const linhas = itens.map((i) => { const pc = sugestaoPorCaixa(i); const sug = soma(pc); return { i, pc, sug, q: sugEditada[i.id] != null ? sugEditada[i.id] : sug }; });
+  const nPedir = linhas.filter((x) => x.q > 0).length;
+  const valor = linhas.reduce((s, x) => s + x.q * (Number(x.i.custo) || 0), 0);
+  const abertas = reservasAbertas();
+  const hist = D().reservas.filter((r) => r.status === 'recebida' || r.status === 'encerrada').sort((a, b) => (b.criadaEm > a.criadaEm ? 1 : -1)).slice(0, 15);
+  $('#app').innerHTML = `
+    <div class="card">
+      <b>Análise semanal</b><div class="small muted">${ultR ? `Última reserva gerada em ${fmtDia(ultR.criadaEm)} (há ${diasDesde(ultR.criadaEm)} dia${diasDesde(ultR.criadaEm) === 1 ? '' : 's'}) por ${esc(ultR.por || '')}` : 'Nenhuma reserva gerada ainda.'}</div>
+      <p class="small muted" style="margin:8px 0 0">Para cada caixa: máximo − saldo da última contagem − o que já está reservado e não chegou. A reserva é a soma das ${cxs.length} caixas.${sup ? ' Dá para mudar o total antes de gerar.' : ''}</p>
+      ${nunca.length ? `<p class="small" style="color:var(--bad);margin:8px 0 0"><b>Fora da conta (nunca contadas):</b> ${nunca.map((c) => 'Caixa ' + esc(c.numero)).join(', ')}.</p>` : ''}
+      ${velhas.length ? `<p class="small" style="color:var(--warn);margin:6px 0 0"><b>Contagem com mais de ${DIAS_CONTAGEM_VELHA} dias:</b> ${velhas.map((c) => 'Caixa ' + esc(c.numero)).join(', ')}. A sugestão pode estar errada.</p>` : ''}
+    </div>
+    <div class="card" style="padding:6px 8px"><div class="tw"><table class="tb" id="tbRes"><thead><tr><th>Material</th><th class="n pc">Nas caixas</th><th class="n pc">Reservado</th><th class="n">Pedir</th></tr></thead><tbody>
+      ${linhas.map(({ i, pc, q }) => { const pend = r3(cxs.reduce((s, c) => s + pendente(c.id, i.id), 0)); return `<tr${q > 0 ? '' : ' class="muted"'}><td><b style="color:var(--title)">${esc(i.nome)}</b><div class="small muted">${i.codigo ? 'SAP ' + esc(i.codigo) : ''}</div>
+        <div class="small mob">nas caixas <b>${fq(saldoTotal(i))}</b>${pend ? ' · reservado ' + fq(pend) : ''}</div>
+        ${Object.keys(pc).length ? `<div class="small muted">${Object.entries(pc).map(([cx, x]) => 'Cx ' + esc((caixaPorId(cx) || {}).numero) + ': ' + fq(x)).join(' · ')}</div>` : ''}</td>
+        <td class="n pc">${fq(saldoTotal(i))}</td><td class="n pc">${pend ? fq(pend) : '—'}</td>
+        <td class="n">${sup ? `<input class="qin" inputmode="decimal" data-sug="${i.id}" value="${q ? fq(q) : ''}" placeholder="0" aria-label="Quantidade a pedir">` : `<b>${q ? fq(q) : '—'}</b>`} <span class="small muted">${esc(i.unidade)}</span></td></tr>`; }).join('')}
+    </tbody></table></div></div>
+    ${sup ? `<div class="sticky-foot"><div class="row">${Object.keys(sugEditada).length ? '<button class="btn" data-a="sug-limpar">Recalcular</button>' : ''}
+      <button class="btn big primary grow" data-a="gerar-reserva" ${nPedir ? '' : 'disabled'}>Gerar reserva (${nPedir} ite${nPedir === 1 ? 'm' : 'ns'}${valor ? ' · ' + brl(valor) : ''})</button></div></div>` : ''}
+    ${abertas.length ? `<div class="group-h">Em aberto (${abertas.length})</div><div class="list">${abertas.map(linhaReserva).join('')}</div>` : ''}
+    ${hist.length ? `<div class="group-h">Histórico</div><div class="list">${hist.map(linhaReserva).join('')}</div>` : ''}`;
+};
+function gerarReserva() {
+  const linhas = ativos().map((i) => { const pc = sugestaoPorCaixa(i); const q = sugEditada[i.id] != null ? sugEditada[i.id] : soma(pc); return { i, q, pc: distribuir(q, pc) }; }).filter((x) => x.q > 0);
+  if (!linhas.length) return toast('Nenhum material para pedir');
+  modal({ titulo: `Gerar reserva de ${linhas.length} ite${linhas.length > 1 ? 'ns' : 'm'}`, ok: 'Gerar reserva',
+    corpo: `<div class="stack"><div class="small">${linhas.map((x) => `• ${fq(x.q)} ${esc(x.i.unidade)} — ${esc(x.i.nome)}`).join('<br>')}</div>
+      <div><label class="f" for="rNum">Nº da reserva no SAP (pode informar depois)</label><input id="rNum" inputmode="numeric"></div>
+      <div><label class="f" for="rObs">Observação</label><input id="rObs"></div></div>`,
+    aoConfirmar(dlg) {
+      const r = { id: uid(), numero: dlg.querySelector('#rNum').value.trim(), criadaEm: agora(), por: quem(), obs: dlg.querySelector('#rObs').value.trim(), status: 'aberta',
+        linhas: linhas.map((x) => ({ itemId: x.i.id, codigo: x.i.codigo || '', nome: x.i.nome, unidade: x.i.unidade, qtd: r3(x.q), recebido: 0, custo: Number(x.i.custo) || 0, caixas: x.pc, recCaixas: {} })) };
+      D().reservas.push(r); sugEditada = {};
+      DB.salvar(); toast('Reserva gerada'); ir('res/' + encodeURIComponent(r.id));
+    } });
+}
+const nomeCx = (cx) => (cx === '_estoque' ? 'Sem caixa' : 'Cx ' + ((caixaPorId(cx) || {}).numero || '?'));
+VIEWS.res = (id) => {
+  const r = D().reservas.find((x) => x.id === id);
+  topo('Reserva', true);
+  if (!r) { $('#app').innerHTML = '<div class="empty">Reserva não encontrada.</div>'; return; }
+  const sup = supervisor();
+  const aberta = r.status === 'aberta' || r.status === 'parcial';
+  const valor = r.linhas.reduce((s, l) => s + l.qtd * (l.custo || 0), 0);
+  const recs = D().movs.filter((m) => m.reservaId === r.id).sort((a, b) => (b.em > a.em ? 1 : -1));
+  $('#app').innerHTML = `
+    <div class="status ${aberta ? 'neutral' : r.status === 'recebida' ? 'ok' : 'bad'}"><div class="big">Reserva ${r.numero ? 'nº ' + esc(r.numero) : '(sem nº SAP)'}</div>
+      <div>${STATUS_RES[r.status]} · gerada em ${fmt(r.criadaEm, true)} por ${esc(r.por || '')}${valor ? ' · ' + brl(valor) : ''}</div>
+      ${r.obs ? `<div class="small">“${esc(r.obs)}”</div>` : ''}${r.encerrada ? `<div class="small">Encerrada por ${esc(r.encerrada.por)} em ${fmt(r.encerrada.em)}${r.encerrada.motivo ? ': ' + esc(r.encerrada.motivo) : ''}</div>` : ''}</div>
+    <div class="row wrap" style="margin-bottom:12px">
+      ${sup && aberta ? `<button class="btn primary grow" data-a="receber" data-r="${r.id}">Registrar recebimento</button>` : ''}
+      ${sup ? `<button class="btn grow" data-a="numero-res" data-r="${r.id}">${r.numero ? 'Alterar nº SAP' : 'Informar nº SAP'}</button>` : ''}
+      <button class="btn grow" data-a="compartilhar-res" data-r="${r.id}">Compartilhar</button>
+      <button class="btn grow" data-a="csv-res" data-r="${r.id}">CSV (para o SAP)</button>
+    </div>
+    <div class="card" style="padding:6px 8px"><div class="tw"><table class="tb"><thead><tr><th>Material</th><th class="n">Pedido</th><th class="n">Recebido</th><th class="n">Falta</th></tr></thead><tbody>
+      ${r.linhas.map((l) => { const f = r3(Math.max(0, l.qtd - (l.recebido || 0))); return `<tr><td>${esc(l.nome)}<div class="small muted">${l.codigo ? 'SAP ' + esc(l.codigo) + ' · ' : ''}${Object.entries(l.caixas || {}).map(([cx, q]) => nomeCx(cx) + ': ' + fq(q)).join(' · ')}</div></td>
+        <td class="n">${fq(l.qtd)} ${esc(l.unidade)}</td><td class="n">${fq(l.recebido || 0)}</td><td class="n" ${f && aberta ? 'style="color:var(--bad)"' : ''}>${f ? fq(f) : '✓'}</td></tr>`; }).join('')}
+    </tbody></table></div></div>
+    ${recs.length ? `<div class="group-h">Abastecimentos desta reserva</div><div class="list">${recs.map((m) => linhaMov(m, true)).join('')}</div>` : ''}
+    ${sup && aberta ? `<button class="btn full danger" data-a="encerrar-res" data-r="${r.id}">Encerrar sem receber o restante</button>` : ''}`;
+};
+function textoReserva(r) {
+  const u = D().config.unidade;
+  return [`*Reserva de materiais*${r.numero ? ' nº ' + r.numero : ''}${u ? ' — ' + u : ''}`, `${fmt(r.criadaEm, true)} · ${r.por || ''}`, '',
+    ...r.linhas.map((l) => `• ${fq(l.qtd)} ${l.unidade} — ${l.nome}${l.codigo ? ' (SAP ' + l.codigo + ')' : ''}`), r.obs ? '\nObs.: ' + r.obs : ''].filter((x) => x !== '').join('\n');
+}
+function statusReserva(r) {
+  if (r.status === 'encerrada') return;
+  const tudo = r.linhas.every((l) => (l.recebido || 0) >= l.qtd);
+  const algo = r.linhas.some((l) => (l.recebido || 0) > 0);
+  r.status = tudo ? 'recebida' : algo ? 'parcial' : 'aberta';
+}
+function formReceber(r) {
+  const falta = (l) => r3(Math.max(0, l.qtd - (l.recebido || 0)));
+  modal({ titulo: 'Recebimento da reserva' + (r.numero ? ' nº ' + r.numero : ''), ok: 'Registrar',
+    corpo: `<div class="stack"><p class="small muted" style="margin:0">Informe o total que chegou de cada item (já vem com o que falta; zere o que não veio). O app distribui nas caixas conforme a reserva e soma ao saldo de cada uma.</p>
+      ${r.linhas.filter((l) => falta(l) > 0).map((l) => `<div class="row"><div class="grow"><b>${esc(l.nome)}</b><div class="small muted">falta ${fq(falta(l))} ${esc(l.unidade)}</div></div>
+        <input class="qin" style="width:90px" inputmode="decimal" data-rec="${esc(l.itemId)}" value="${fq(falta(l))}"></div>`).join('')}
+      <div><label class="f" for="recDoc">Nota fiscal / documento</label><input id="recDoc"></div></div>`,
+    validar(dlg) {
+      for (const el of dlg.querySelectorAll('[data-rec]')) { const v = num(el.value); if (el.value.trim() && !(v >= 0)) { toast('Quantidade inválida'); return false; } }
+      if (![...dlg.querySelectorAll('[data-rec]')].some((el) => num(el.value) > 0)) { toast('Informe pelo menos uma quantidade'); return false; }
+      return true;
+    },
+    aoConfirmar(dlg) {
+      const em = agora(), doc = dlg.querySelector('#recDoc').value.trim() || (r.numero ? 'Reserva ' + r.numero : '');
+      for (const el of dlg.querySelectorAll('[data-rec]')) {
+        let q = r3(num(el.value)); if (!(q > 0)) continue;
+        const l = r.linhas.find((x) => x.itemId === el.dataset.rec);
+        l.recCaixas = l.recCaixas || {};
+        l.recebido = r3((l.recebido || 0) + q);
+        // distribui pelo que cada caixa ainda espera, na ordem da reserva
+        for (const [cx, pedido] of Object.entries(l.caixas || {})) {
+          if (q <= 0) break;
+          const x = Math.min(q, r3(pedido - (l.recCaixas[cx] || 0)));
+          if (x <= 0) continue;
+          l.recCaixas[cx] = r3((l.recCaixas[cx] || 0) + x); q = r3(q - x);
+          D().movs.push({ id: uid(), itemId: l.itemId, caixaId: cx === '_estoque' ? '' : cx, tipo: 'entrada', qtd: r3(x), custo: custoItem(l.itemId), reservaId: r.id, doc, obs: 'Recebimento de reserva', por: quem(), em });
+        }
+        if (q > 0) D().movs.push({ id: uid(), itemId: l.itemId, caixaId: '', tipo: 'entrada', qtd: q, custo: custoItem(l.itemId), reservaId: r.id, doc, obs: 'Recebido além do pedido (sem caixa)', por: quem(), em });
+      }
+      statusReserva(r);
+      DB.salvar(); toast(r.status === 'recebida' ? 'Reserva recebida por completo' : 'Recebimento parcial registrado'); render();
+    } });
+}
+
+/* --- Materiais --- */
+VIEWS.materiais = () => {
+  topo('Materiais');
+  const sup = supervisor();
+  const todos = ativos(), cxs = caixas();
+  const inativos = D().itens.filter((i) => i.ativo === false);
+  $('#app').innerHTML = `
+    ${sup ? '<div class="row" style="margin-bottom:12px"><button class="btn primary grow" data-a="novo-item">+ Novo material</button><button class="btn" data-a="importar">Importar lista</button></div>' : ''}
+    <p class="small muted" style="margin:0 4px 8px">Todo material ativo faz parte de todas as caixas, com o mesmo mínimo e máximo.</p>
+    <div class="list">${todos.map((i) => { const ab = cxs.filter((c) => abaixoMin(c.id, i)).length; return `
+      <a class="li" href="#item/${encodeURIComponent(i.id)}"><div class="grow"><div class="t">${esc(i.nome)}</div>
+      <div class="s">${esc([i.codigo ? 'SAP ' + i.codigo : '', i.tipo].filter(Boolean).join(' · '))} · mín. ${fq(i.minimo)} · máx. ${fq(i.maximo)}</div>
+      ${ab ? `<div class="s"><span class="tag bad">abaixo do mínimo em ${ab} caixa${ab > 1 ? 's' : ''}</span></div>` : ''}${caVencido(i) ? '<div class="s"><span class="tag warn">CA vencido</span></div>' : ''}</div>
+      <div class="qty">${qtdUn(saldoTotal(i), i)}<div class="small muted" style="font-weight:600">nas caixas</div></div></a>`; }).join('') || '<div class="empty">Nenhum material cadastrado.</div>'}</div>
+    ${sup && inativos.length ? `<div class="group-h">Desativados</div><div class="list">${inativos.map((i) => `<a class="li" href="#item/${encodeURIComponent(i.id)}"><div class="grow"><div class="t">${esc(i.nome)}</div><div class="s">${esc(i.codigo || '')}</div></div><span class="tag">inativo</span></a>`).join('')}</div>` : ''}`;
+};
+function linhaMov(m, comItem) {
+  const i = itemPorId(m.itemId);
+  const res = m.reservaId && D().reservas.find((r) => r.id === m.reservaId);
+  return `<div class="li ${m.estorno ? 'est' : ''}"><div class="grow">
+    <div class="t">${comItem ? esc(i ? i.nome : '(material removido)') : res ? 'Recebimento de reserva' : 'Abastecimento avulso'}</div>
+    <div class="s">${m.caixaId ? esc(nomeCaixa(caixaPorId(m.caixaId))) : 'sem caixa'} · ${fmt(m.em, true)}${m.doc ? ' · ' + esc(m.doc) : ''}${m.obs && !res ? ' · “' + esc(m.obs) + '”' : ''}</div>
+    <div class="s">por ${esc(m.por || '—')}${m.estorno ? ` · <b style="color:var(--bad)">estornado</b> por ${esc(m.estorno.por)}${m.estorno.motivo ? ': ' + esc(m.estorno.motivo) : ''}` : ''}</div></div>
+    <div style="text-align:right"><div class="qty">+${qtdUn(m.qtd, i)}</div>
+    ${!m.estorno && supervisor() ? `<button class="btn sm danger" data-a="estornar" data-m="${m.id}" style="margin-top:6px">Estornar</button>` : ''}</div></div>`;
+}
+VIEWS.item = (id) => {
+  const i = itemPorId(id);
+  topo(i ? i.nome : 'Material', true);
+  if (!i) { $('#app').innerHTML = '<div class="empty">Material não encontrado.</div>'; return; }
+  const sup = supervisor();
+  const movs = D().movs.filter((m) => m.itemId === i.id).sort((a, b) => (b.em > a.em ? 1 : -1)).slice(0, 30);
+  $('#app').innerHTML = `
+    <div class="card">
+      <div class="small muted">${esc([i.codigo ? 'SAP ' + i.codigo : '', i.tipo].filter(Boolean).join(' · '))}</div>
+      <div style="font-size:30px;font-weight:800;color:var(--title)">${fq(saldoTotal(i))} <span style="font-size:16px" class="muted">${esc(i.unidade)} nas caixas</span></div>
+      <div class="g2 small" style="margin-top:8px">
+        <div><span class="muted">Mínimo por caixa:</span> ${fq(i.minimo)}</div><div><span class="muted">Máximo por caixa:</span> ${fq(i.maximo)}</div>
+        <div><span class="muted">Custo unit.:</span> ${Number(i.custo) ? brl(i.custo) : '—'}</div>
+        ${i.tipo === 'EPI' ? `<div><span class="muted">CA:</span> ${esc(i.ca || '—')}${i.caValidade ? ' (val. ' + fmtData(i.caValidade) + ')' : ''}</div>` : ''}
+      </div>${i.obs ? `<p class="small muted" style="margin:10px 0 0">${esc(i.obs)}</p>` : ''}
+      ${i.ativo === false ? '<p class="small" style="color:var(--bad)"><b>Material desativado.</b></p>' : ''}
+    </div>
+    ${sup ? `<div class="row wrap" style="margin-bottom:12px"><button class="btn grow" data-a="editar-item" data-i="${i.id}">Editar</button></div>` : ''}
+    <div class="card" style="padding:6px 8px"><div class="tw"><table class="tb"><thead><tr><th>Caixa</th><th class="n">Saldo</th><th>Contado em</th><th class="n">Repor</th></tr></thead><tbody>
+      ${caixas().map((c) => { const u = ultContagem(c.id, i.id); return `<tr><td><a href="#caixa/${encodeURIComponent(c.id)}">${esc(c.numero)}</a> <span class="small muted">${esc(c.posto || '')}</span></td>
+        <td class="n" ${abaixoMin(c.id, i) ? 'style="color:var(--bad);font-weight:800"' : ''}>${u ? fq(saldo(c.id, i.id)) : '—'}</td><td class="small">${u ? fmtDia(u.em) : 'nunca'}</td><td class="n">${sugestao(c.id, i) ? fq(sugestao(c.id, i)) : '—'}</td></tr>`; }).join('')}
+    </tbody></table></div></div>
+    ${movs.length ? `<div class="group-h">Abastecimentos</div><div class="list">${movs.map((m) => linhaMov(m, false)).join('')}</div>` : ''}
+    ${sup ? (i.ativo === false ? `<button class="btn full" data-a="reativar" data-i="${i.id}">Reativar material</button>` : `<button class="btn full danger" data-a="desativar" data-i="${i.id}">Desativar material</button>`) : ''}`;
+};
+
+function formItem(i) {
+  const cfg = D().config;
+  const novo = !i;
+  i = i || { tipo: 'Peça de reposição', unidade: 'un' };
+  const un = [...new Set([...cfg.unidades, i.unidade].filter(Boolean))];
+  modal({
+    titulo: novo ? 'Novo material' : 'Editar material', ok: 'Salvar',
+    corpo: `<div class="stack">
+      <div><label class="f" for="iNome">Nome *</label><input id="iNome" value="${esc(i.nome || '')}"></div>
+      <div class="g2"><div><label class="f" for="iCod">Código SAP</label><input id="iCod" value="${esc(i.codigo || '')}"></div>
+        <div><label class="f" for="iTipo">Tipo</label><select id="iTipo">${TIPOS.map((t) => `<option ${t === i.tipo ? 'selected' : ''}>${t}</option>`).join('')}</select></div></div>
+      <div class="g2"><div><label class="f" for="iMin">Mínimo por caixa</label><input id="iMin" inputmode="decimal" value="${i.minimo ? fq(i.minimo) : ''}"></div>
+        <div><label class="f" for="iMax">Máximo por caixa *</label><input id="iMax" inputmode="decimal" value="${i.maximo ? fq(i.maximo) : ''}"></div></div>
+      <div class="g2"><div><label class="f" for="iUn">Unidade</label><select id="iUn">${un.map((u) => `<option ${u === i.unidade ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select></div>
+        <div><label class="f" for="iCusto">Custo unitário (R$)</label><input id="iCusto" inputmode="decimal" value="${i.custo ? String(i.custo).replace('.', ',') : ''}"></div></div>
+      <div class="g2" id="iEpi"><div><label class="f" for="iCa">CA (EPI)</label><input id="iCa" value="${esc(i.ca || '')}"></div>
+        <div><label class="f" for="iCaVal">Validade do CA</label><input id="iCaVal" type="date" value="${esc(i.caValidade || '')}"></div></div>
+      <div><label class="f" for="iObs">Observação</label><input id="iObs" value="${esc(i.obs || '')}"></div></div>`,
+    aoAbrir(dlg) {
+      const t = dlg.querySelector('#iTipo'), e = dlg.querySelector('#iEpi');
+      const v = () => { e.style.display = t.value === 'EPI' ? '' : 'none'; };
+      t.addEventListener('change', v); v();
+      setTimeout(() => dlg.querySelector('#iNome').focus(), 50);
+    },
+    validar(dlg) {
+      const g = (s) => dlg.querySelector(s).value.trim();
+      if (!g('#iNome')) { toast('Informe o nome'); return false; }
+      if (!(num(g('#iMax')) > 0)) { toast('Informe o máximo por caixa'); return false; }
+      if (g('#iMin') && !(num(g('#iMin')) >= 0)) { toast('Mínimo inválido'); return false; }
+      if (num(g('#iMin')) > num(g('#iMax'))) { toast('O mínimo não pode passar do máximo'); return false; }
+      if (g('#iCusto') && !(num(g('#iCusto')) >= 0)) { toast('Custo inválido'); return false; }
+      const cod = g('#iCod');
+      if (cod && D().itens.some((x) => x.id !== i.id && (x.codigo || '').toLowerCase() === cod.toLowerCase())) { toast('Já existe material com esse código'); return false; }
+      return true;
+    },
+    aoConfirmar(dlg) {
+      const g = (s) => dlg.querySelector(s).value.trim();
+      const n = (s) => { const v = num(g(s)); return isNaN(v) ? 0 : r3(v); };
+      const dados = { nome: g('#iNome'), codigo: g('#iCod'), tipo: g('#iTipo'), minimo: n('#iMin'), maximo: n('#iMax'), unidade: g('#iUn'),
+        custo: Math.round(n('#iCusto') * 100) / 100, ca: g('#iCa'), caValidade: g('#iCaVal'), obs: g('#iObs'), atualizadoEm: agora() };
+      if (dados.tipo !== 'EPI') { dados.ca = ''; dados.caValidade = ''; }
+      if (novo) { const it = Object.assign({ id: uid(), ativo: true, criadoEm: agora() }, dados); D().itens.push(it); DB.salvar(); toast('Material cadastrado'); ir('materiais'); }
+      else { Object.assign(i, dados); DB.salvar(); toast('Salvo'); render(); }
+    }
+  });
+}
+function formAbastecer(cx) {
+  const c = caixaPorId(cx);
+  modal({
+    titulo: 'Abastecimento avulso — Caixa ' + c.numero, ok: 'Registrar',
+    corpo: `<div class="stack"><p class="small muted" style="margin:0">Material colocado na caixa fora de uma reserva (sobra de estoque, remanejamento). Recebimento de reserva é feito na própria reserva.</p>
+      ${ativos().map((i) => `<div class="row"><div class="grow"><b>${esc(i.nome)}</b><div class="small muted">saldo ${fq(saldo(cx, i.id))} · máx. ${fq(i.maximo)}</div></div>
+        <input class="qin" style="width:80px" inputmode="decimal" data-ab="${i.id}" placeholder="0"></div>`).join('')}
+      <div><label class="f" for="abObs">Origem / observação</label><input id="abObs"></div></div>`,
+    validar(dlg) { if (![...dlg.querySelectorAll('[data-ab]')].some((el) => num(el.value) > 0)) { toast('Informe pelo menos uma quantidade'); return false; } return true; },
+    aoConfirmar(dlg) {
+      const em = agora(), obs = dlg.querySelector('#abObs').value.trim();
+      for (const el of dlg.querySelectorAll('[data-ab]')) { const q = num(el.value); if (q > 0) D().movs.push({ id: uid(), itemId: el.dataset.ab, caixaId: cx, tipo: 'entrada', qtd: r3(q), custo: custoItem(el.dataset.ab), doc: '', obs, por: quem(), em }); }
+      DB.salvar(); toast('Abastecimento registrado'); render();
+    }
+  });
+}
+function formEstornar(m) {
+  const i = itemPorId(m.itemId);
+  modal({
+    titulo: 'Estornar abastecimento?', ok: 'Estornar', perigo: true,
+    corpo: `<p><b>${fq(m.qtd)} ${esc(i ? i.unidade : '')}</b> de ${esc(i ? i.nome : '')} · ${m.caixaId ? esc(nomeCaixa(caixaPorId(m.caixaId))) : 'sem caixa'} · ${fmt(m.em, true)}.</p>
+      <p class="small muted">Continua no histórico, riscado, e deixa de contar no saldo.${m.reservaId ? ' A quantidade volta a constar como "falta" na reserva.' : ''}</p>
+      <label class="f" for="estMot">Motivo *</label><input id="estMot" placeholder="Ex.: lançado em duplicidade">`,
+    validar(dlg) { if (!dlg.querySelector('#estMot').value.trim()) { toast('Informe o motivo'); return false; } return true; },
+    aoConfirmar(dlg) {
+      m.estorno = { por: quem(), em: agora(), motivo: dlg.querySelector('#estMot').value.trim() };
+      const r = m.reservaId && D().reservas.find((x) => x.id === m.reservaId);
+      if (r) {
+        const l = r.linhas.find((x) => x.itemId === m.itemId);
+        if (l) { l.recebido = r3(Math.max(0, (l.recebido || 0) - m.qtd)); const k = m.caixaId || '_estoque'; if (l.recCaixas && l.recCaixas[k]) l.recCaixas[k] = r3(Math.max(0, l.recCaixas[k] - m.qtd)); }
+        statusReserva(r);
+      }
+      DB.salvar(); toast('Abastecimento estornado'); render();
+    }
+  });
+}
+function formEstornarContagem(c) {
+  modal({ titulo: 'Estornar contagem?', ok: 'Estornar', perigo: true,
+    corpo: `<p>Caixa ${esc(c.caixa)} · ${fmt(c.fechadaEm, true)} · ${esc(c.responsavel)}.</p><p class="small muted">Ela deixa de valer: o saldo da caixa volta a ser o da contagem anterior. Continua no histórico, marcada como estornada.</p>
+      <label class="f" for="estMot">Motivo *</label><input id="estMot" placeholder="Ex.: contou a caixa errada">`,
+    validar(dlg) { if (!dlg.querySelector('#estMot').value.trim()) { toast('Informe o motivo'); return false; } return true; },
+    aoConfirmar(dlg) { c.estorno = { por: quem(), em: agora(), motivo: dlg.querySelector('#estMot').value.trim() }; DB.salvar(); toast('Contagem estornada'); render(); } });
+}
+function tipoDeTexto(s) {
+  const t = (s || '').trim().toLowerCase();
+  if (t.startsWith('e')) return 'EPI';
+  if (t.startsWith('c')) return 'Consumível';
+  return 'Peça de reposição';
+}
+function formImportar() {
+  modal({
+    titulo: 'Importar lista de materiais', ok: 'Importar',
+    corpo: `<p class="small muted" style="margin-top:0">Uma linha por material, campos separados por ponto e vírgula (ou colados do Excel/Word):<br>
+      <b>código SAP; nome; mínimo; máximo; unidade; tipo; custo</b><br>
+      Unidade padrão "un", tipo padrão Peça de reposição. Código já existente é ignorado.</p>
+      <textarea id="impTxt" style="min-height:200px"></textarea>`,
+    aoConfirmar(dlg) {
+      let n = 0, ign = 0;
+      const cods = new Set(D().itens.map((x) => (x.codigo || '').toLowerCase()).filter(Boolean));
+      for (const linha of dlg.querySelector('#impTxt').value.split('\n')) {
+        if (!linha.trim()) continue;
+        const p = linha.split(/[;\t]/).map((x) => x.trim());
+        let [codigo, nome, minimo, maximo, unidade, tipo, custo] = p;
+        if (!nome || /^(nome|material)$/i.test(nome)) { ign++; continue; }
+        if (codigo && cods.has(codigo.toLowerCase())) { ign++; continue; }
+        const nn = (v) => { const x = num(v); return x >= 0 ? r3(x) : 0; };
+        if (/^unidade$/i.test(unidade || '')) unidade = 'un';
+        const it = { id: uid(), codigo: codigo || '', nome, tipo: tipoDeTexto(tipo), unidade: unidade || 'un', minimo: nn(minimo), maximo: nn(maximo),
+          custo: Math.round(nn(custo) * 100) / 100, ca: '', caValidade: '', obs: '', ativo: true, criadoEm: agora(), atualizadoEm: agora() };
+        if (!D().config.unidades.includes(it.unidade)) D().config.unidades.push(it.unidade);
+        D().itens.push(it); n++;
+        if (codigo) cods.add(codigo.toLowerCase());
+      }
+      DB.salvar(); toast(`${n} material(is) importado(s)${ign ? `, ${ign} linha(s) ignorada(s)` : ''}`); ir('materiais'); render();
+    }
+  });
+}
+
+/* --- Relatórios --- */
+let rel = { periodo: '30d', de: '', ate: '', caixa: '' };
+function intervalo() {
+  const fim = new Date(); let ini = new Date();
+  if (rel.periodo === '7d') { ini.setDate(ini.getDate() - 6); ini.setHours(0, 0, 0, 0); }
+  else if (rel.periodo === '30d') { ini.setDate(ini.getDate() - 29); ini.setHours(0, 0, 0, 0); }
+  else if (rel.periodo === '90d') { ini.setDate(ini.getDate() - 89); ini.setHours(0, 0, 0, 0); }
+  else if (rel.periodo === 'mes') { ini = new Date(fim.getFullYear(), fim.getMonth(), 1); }
+  else if (rel.periodo === 'mesant') { ini = new Date(fim.getFullYear(), fim.getMonth() - 1, 1); fim.setTime(new Date(fim.getFullYear(), fim.getMonth(), 1) - 1); }
+  else {
+    ini = rel.de ? new Date(rel.de + 'T00:00:00') : new Date(0);
+    if (rel.ate) fim.setTime(new Date(rel.ate + 'T23:59:59.999'));
+  }
+  return [ini, fim];
+}
+const noPeriodo = (ts) => { const [a, b] = intervalo(); const t = new Date(ts); return t >= a && t <= b; };
+// Linhas de consumo do período: {c, l, cons, valor}
+function consumoPeriodo() {
+  const r = [];
+  for (const c of contagensValidas()) {
+    if (!noPeriodo(c.fechadaEm) || (rel.caixa && c.caixaId !== rel.caixa)) continue;
+    for (const l of c.linhas) { const cons = consumoLinha(l); if (cons) r.push({ c, l, cons, valor: cons * (l.custo || custoItem(l.itemId)) }); }
+  }
+  return r;
+}
+function agrupar(linhas, chave) {
+  const g = {};
+  for (const x of linhas) {
+    const k = chave(x) || '(sem informação)';
+    const y = g[k] ||= { k, qtd: 0, valor: 0, n: 0 };
+    y.qtd += x.cons; y.valor += x.valor; y.n++;
+  }
+  return Object.values(g).map((y) => Object.assign(y, { qtd: r3(y.qtd) }));
+}
+function tabelaGrupo(titulo, linhas, comValor, rotulo) {
+  if (!linhas.length) return '';
+  const metr = (x) => (comValor ? x.valor : x.qtd);
+  linhas.sort((a, b) => metr(b) - metr(a));
+  const max = Math.max(...linhas.map(metr), 0) || 1;
+  return `<div class="card"><h2>${titulo}</h2><div class="tw"><table class="tb"><thead><tr><th>${rotulo}</th><th class="n">Peças usadas</th>${comValor ? '<th class="n">Valor</th>' : ''}</tr></thead><tbody>
+    ${linhas.map((x) => `<tr><td>${esc(x.k)}<div class="barra" style="width:${Math.max(0, metr(x)) / max * 100}%"></div></td><td class="n">${fq(x.qtd)}</td>${comValor ? `<td class="n">${brl(x.valor)}</td>` : ''}</tr>`).join('')}
+    </tbody></table></div></div>`;
+}
+VIEWS.relatorios = () => {
+  topo('Relatórios');
+  const cfg = D().config;
+  const [ini, fim] = intervalo();
+  const semanas = Math.max(1, (fim - ini) / (7 * 86400000));
+  const cons = consumoPeriodo();
+  const tc = temCusto();
+  const valorCons = cons.reduce((s, x) => s + x.valor, 0);
+  const nCont = contagensValidas().filter((c) => noPeriodo(c.fechadaEm) && (!rel.caixa || c.caixaId === rel.caixa)).length;
+  const reservas = D().reservas.filter((r) => noPeriodo(r.criadaEm)).sort((a, b) => (b.criadaEm > a.criadaEm ? 1 : -1));
+  const valRes = (r) => r.linhas.reduce((s, l) => s + l.qtd * (l.custo || 0), 0);
+  const porItem = agrupar(cons, (x) => x.l.itemId).map((y) => Object.assign(y, { item: itemPorId(y.k) })).filter((y) => y.qtd > 0).sort((a, b) => b.qtd - a.qtd);
+  const pend = [];
+  for (const r of reservasAbertas()) for (const l of r.linhas) { const f = r3(l.qtd - (l.recebido || 0)); if (f > 0) pend.push({ r, l, f }); }
+  const perNome = { '7d': '7 dias', '30d': '30 dias', '90d': '90 dias', mes: 'Este mês', mesant: 'Mês passado', pers: 'Período' };
+  const cxSel = rel.caixa && caixaPorId(rel.caixa);
+  $('#app').innerHTML = `
+    <div class="so-print"><div style="font-size:20px;font-weight:800;color:#043865">Relatório das caixas de materiais${cfg.unidade ? ' — ' + esc(cfg.unidade) : ''}</div>
+      <div class="small">${fmtDia(ini)} a ${fmtDia(fim)}${cxSel ? ' · ' + esc(nomeCaixa(cxSel)) : ''} · emitido em ${fmt(agora(), true)} por ${esc(quem())}</div><br></div>
+    <div class="noprint">
+      <div class="chips" id="rPer">${Object.entries(perNome).map(([k, n]) => `<button data-v="${k}" class="${rel.periodo === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+      ${rel.periodo === 'pers' ? `<div class="g2" style="margin:8px 0"><div><label class="f" for="rDe">De</label><input type="date" id="rDe" value="${rel.de}"></div><div><label class="f" for="rAte">Até</label><input type="date" id="rAte" value="${rel.ate}"></div></div>` : ''}
+      <select id="rCaixa" aria-label="Caixa" style="margin:8px 0 12px"><option value="">Todas as caixas</option>${caixas().map((c) => `<option value="${c.id}" ${c.id === rel.caixa ? 'selected' : ''}>${esc(nomeCaixa(c))}</option>`).join('')}</select>
+    </div>
+    <div class="kpis k4">
+      <div class="kpi"><b>${nCont}</b><span>contagens no período</span></div>
+      <div class="kpi"><b>${tc ? brl(valorCons) : fq(cons.reduce((s, x) => s + Math.max(0, x.cons), 0))}</b><span>${tc ? 'consumo (valor)' : 'peças usadas'}</span></div>
+      <div class="kpi"><b>${reservas.length}</b><span>reservas geradas${tc ? ' · ' + brl(reservas.reduce((s, r) => s + valRes(r), 0)) : ''}</span></div>
+      <div class="kpi"><b>${pend.length}</b><span>itens aguardando recebimento</span></div>
+    </div>
+    <div class="row wrap noprint" style="margin-bottom:12px">
+      <button class="btn grow" data-a="rel-csv">Consumo (CSV)</button>
+      <button class="btn grow" data-a="estoque-csv">Saldo das caixas (CSV)</button>
+      <button class="btn grow" data-a="imprimir">Imprimir / PDF</button>
+      <button class="btn grow" data-a="rel-resumo">Compartilhar resumo</button>
+    </div>
+    ${!cons.length ? '<div class="card muted">Nenhum consumo no período. O consumo aparece a partir da segunda contagem de cada caixa.</div>' : ''}
+    <div class="lado">
+      ${rel.caixa ? '' : tabelaGrupo('Consumo por caixa', agrupar(cons, (x) => 'Caixa ' + x.c.caixa + (x.c.posto ? ' · ' + x.c.posto : '')), tc, 'Caixa')}
+      ${tabelaGrupo('Consumo por turno da contagem', agrupar(cons, (x) => x.c.turno), tc, 'Turno')}
+    </div>
+    ${porItem.length ? `<div class="card"><h2>Materiais mais usados</h2><div class="tw"><table class="tb"><thead><tr><th>Material</th><th class="n">Usado</th><th class="n">Média/semana</th>${tc ? '<th class="n">Valor</th>' : ''}</tr></thead><tbody>
+      ${porItem.map((y) => { const i = y.item || {}; return `<tr><td>${esc(i.nome || '?')}${i.codigo ? `<div class="small muted">SAP ${esc(i.codigo)}</div>` : ''}</td><td class="n">${fq(y.qtd)} ${esc(i.unidade || '')}</td><td class="n">${fq(r3(y.qtd / semanas))}</td>${tc ? `<td class="n">${brl(y.valor)}</td>` : ''}</tr>`; }).join('')}
+      </tbody></table></div><p class="small muted" style="margin-bottom:0">Média/semana ${rel.caixa ? 'desta caixa' : `somando as ${caixas().length} caixas`}. Se o uso semanal de uma caixa passa da diferença entre máximo e mínimo, ela chega abaixo do mínimo antes da próxima análise.</p></div>` : ''}
+    ${reservas.length ? `<div class="card"><h2>Reservas do período</h2><div class="tw"><table class="tb"><thead><tr><th>Data</th><th>Nº SAP</th><th>Status</th><th class="n">Itens</th>${tc ? '<th class="n">Valor</th>' : ''}</tr></thead><tbody>
+      ${reservas.map((r) => `<tr><td><a href="#res/${encodeURIComponent(r.id)}">${fmtDia(r.criadaEm)}</a></td><td>${esc(r.numero || '—')}</td><td class="small">${STATUS_RES[r.status]}</td><td class="n">${r.linhas.length}</td>${tc ? `<td class="n">${brl(valRes(r))}</td>` : ''}</tr>`).join('')}
+      </tbody></table></div></div>` : ''}
+    ${pend.length ? `<div class="card"><h2>Aguardando recebimento</h2><div class="tw"><table class="tb"><thead><tr><th>Material</th><th>Reserva</th><th class="n">Falta</th><th class="n">Em aberto há</th></tr></thead><tbody>
+      ${pend.map((x) => `<tr><td>${esc(x.l.nome)}</td><td class="small">${x.r.numero ? 'nº ' + esc(x.r.numero) : fmtDia(x.r.criadaEm)}</td><td class="n">${fq(x.f)} ${esc(x.l.unidade)}</td><td class="n" ${diasDesde(x.r.criadaEm) > 14 ? 'style="color:var(--bad)"' : ''}>${diasDesde(x.r.criadaEm)} dias</td></tr>`).join('')}
+      </tbody></table></div></div>` : ''}`;
+  $('#rPer').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; rel.periodo = b.dataset.v; VIEWS.relatorios(); });
+  for (const [id, k] of [['#rCaixa', 'caixa'], ['#rDe', 'de'], ['#rAte', 'ate']]) { const el = $(id); if (el) el.addEventListener('change', () => { rel[k] = el.value; VIEWS.relatorios(); }); }
+};
+function resumoTexto() {
+  const [ini, fim] = intervalo();
+  const cons = consumoPeriodo();
+  const top = agrupar(cons, (x) => x.l.itemId).filter((y) => y.qtd > 0).sort((a, b) => b.qtd - a.qtd).slice(0, 12);
+  const porCx = agrupar(cons, (x) => 'Caixa ' + x.c.caixa).sort((a, b) => b.qtd - a.qtd);
+  const baixo = [];
+  for (const c of caixas()) for (const i of ativos()) if (abaixoMin(c.id, i)) baixo.push(`• Cx ${c.numero}: ${i.nome} (${fq(saldo(c.id, i.id))})`);
+  return [`*Caixas de materiais — resumo${D().config.unidade ? ' ' + D().config.unidade : ''}*`, `${fmtDia(ini)} a ${fmtDia(fim)}`, '',
+    ...(top.length ? ['*Mais usados*', ...top.map((y) => { const i = itemPorId(y.k); return `• ${fq(y.qtd)} ${i.unidade} — ${i.nome}`; }), ''] : []),
+    ...(porCx.length ? ['*Por caixa*', ...porCx.map((y) => `• ${y.k}: ${fq(y.qtd)} peças`), ''] : []),
+    ...(baixo.length ? [`*Abaixo do mínimo agora (${baixo.length})*`, ...baixo.slice(0, 25)] : ['Nenhum item abaixo do mínimo.'])].join('\n');
+}
+
+/* --- Exportações --- */
+function baixar(nome, conteudo, tipo) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([conteudo], { type: tipo }));
+  a.download = nome; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+const csvC = (v) => { const s = typeof v === 'number' ? String(v).replace('.', ',') : String(v ?? ''); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+const csv = (linhas) => '﻿' + linhas.map((l) => l.map(csvC).join(';')).join('\r\n');
+function exportarConsumo() {
+  const l = [['Data da contagem', 'Caixa', 'Posto', 'Turno', 'Responsável', 'Matrícula', 'Código SAP', 'Material', 'Anterior', 'Contado', 'Usado', 'Unidade', 'Custo unit.', 'Valor']];
+  for (const x of consumoPeriodo()) l.push([fmt(x.c.fechadaEm, true), x.c.caixa, x.c.posto, x.c.turno, x.c.responsavel, x.c.matricula, x.l.codigo, x.l.nome, x.l.anterior, x.l.contado, x.cons, x.l.unidade, x.l.custo || custoItem(x.l.itemId), r3(x.valor)]);
+  baixar(`caixas-consumo-${hoje()}.csv`, csv(l), 'text/csv');
+}
+function exportarEstoque() {
+  const l = [['Caixa', 'Posto', 'Código SAP', 'Material', 'Unidade', 'Mínimo', 'Máximo', 'Saldo', 'Contado em', 'Reservado', 'Repor']];
+  for (const c of caixas()) for (const i of ativos()) { const u = ultContagem(c.id, i.id); l.push([c.numero, c.posto, i.codigo, i.nome, i.unidade, Number(i.minimo) || 0, Number(i.maximo) || 0, saldo(c.id, i.id), u ? fmt(u.em, true) : '', pendente(c.id, i.id), sugestao(c.id, i)]); }
+  baixar(`caixas-saldo-${hoje()}.csv`, csv(l), 'text/csv');
+}
+function exportarReserva(r) {
+  const l = [['Código SAP', 'Material', 'Quantidade', 'Unidade', 'Recebido']];
+  for (const x of r.linhas) l.push([x.codigo, x.nome, x.qtd, x.unidade, x.recebido || 0]);
+  baixar(`reserva-${r.numero || fmtDia(r.criadaEm).replace(/\//g, '-')}.csv`, csv(l), 'text/csv');
+}
+async function compartilharTexto(txt) {
+  if (navigator.share) { try { await navigator.share({ text: txt }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  try { await navigator.clipboard.writeText(txt); toast('Texto copiado'); } catch (e) { toast('Não foi possível compartilhar'); }
+}
+
+/* --- Ajustes --- */
+function cartaoConta() {
+  if (!Nuvem.ativa()) return `<div class="card stack"><h2>Nuvem</h2><p class="small muted" style="margin:0">Usando sem nuvem: os dados ficam só neste aparelho.</p><button class="btn full primary" data-a="ir-login">Entrar na conta da equipe</button></div>`;
+  return `<div class="card stack"><h2>Conta</h2>
+    <div><b>${esc(Nuvem.sessao.email)}</b> · ${supervisor() ? 'Supervisor' : 'Técnico'}</div>
+    <div class="small muted">${esc(Nuvem.textoEstado())}</div>
+    <div class="row wrap"><button class="btn grow" data-a="sinc-agora">Sincronizar agora</button><button class="btn grow" data-a="trocar-login">Trocar de login</button></div>
+    ${supervisor() ? '<button class="btn full danger" data-a="sair">Sair da conta neste aparelho</button>' : ''}</div>`;
+}
+VIEWS.ajustes = () => {
+  const sup = supervisor();
+  topo(sup ? 'Ajustes' : 'Conta', true);
+  const cfg = D().config;
+  if (!sup) {
+    $('#app').innerHTML = cartaoConta() + '<div class="card small muted">O técnico conta as caixas e vê saldos, reservas e relatórios. Cadastro, reserva, recebimento e ajustes são do supervisor.</div>';
+    return;
+  }
+  $('#app').innerHTML = `
+    <div class="lado"><div>
+    <div class="card stack"><h2>Caixas e equipe</h2>
+      <div><label class="f" for="cfUn">Nome da unidade (aparece no topo e nos relatórios)</label><input id="cfUn" value="${esc(cfg.unidade)}" placeholder="Ex.: Revistamento ZTO"></div>
+      <div><label class="f" for="cfCx">Caixas — uma por linha: número; posto</label><textarea id="cfCx" style="min-height:200px" placeholder="01; Posto 1&#10;02; Posto 2">${esc(caixas().map((c) => c.numero + (c.posto ? '; ' + c.posto : '')).join('\n'))}</textarea>
+        <div class="small muted">Tirar uma linha desativa a caixa (o histórico fica).</div></div>
+      <div><label class="f" for="cfEq">Equipe — uma por linha: nome; matrícula (vazio = digitar na contagem)</label><textarea id="cfEq" style="min-height:120px" placeholder="João Silva; CS12345">${esc(cfg.equipe.join('\n'))}</textarea></div>
+      <div><label class="f" for="cfTur">Turnos (um por linha)</label><textarea id="cfTur">${esc(cfg.turnos.join('\n'))}</textarea></div>
+      <div><label class="f" for="cfUnid">Unidades de medida (separadas por vírgula)</label><input id="cfUnid" value="${esc(cfg.unidades.join(', '))}"></div>
+      <button class="btn full primary" data-a="salvar-cfg">Salvar ajustes</button>
+    </div></div><div>
+    ${cartaoConta()}
+    <div class="card stack"><h2>Dados</h2>
+      <div class="row wrap"><button class="btn grow" data-a="estoque-csv">Saldo das caixas (CSV)</button><button class="btn grow" data-a="backup">Backup (JSON)</button><button class="btn grow" data-a="restaurar">Restaurar backup</button></div>
+      ${Nuvem.ativa() ? '' : '<button class="btn full danger" data-a="apagar">Apagar todos os dados deste aparelho</button>'}
+    </div>
+    <div class="card small muted">Materiais · v3.0 · mesmos logins da Ferramentaria</div>
+    </div></div>`;
+};
+function salvarCaixas(txt) {
+  const cfg = D().config;
+  const vistos = new Set();
+  for (const linha of txt.split('\n')) {
+    if (!linha.trim()) continue;
+    const [numero, ...resto] = linha.split(/[;\t]/).map((x) => x.trim());
+    if (!numero || vistos.has(numero)) continue;
+    vistos.add(numero);
+    const posto = resto.join(' ').trim();
+    const c = cfg.caixas.find((x) => x.numero === numero);
+    if (c) { c.posto = posto; c.ativa = true; } else cfg.caixas.push({ id: uid(), numero, posto, ativa: true });
+  }
+  for (const c of cfg.caixas) if (!vistos.has(c.numero)) c.ativa = false;
+  cfg.caixas.sort((a, b) => a.numero.localeCompare(b.numero, 'pt', { numeric: true }));
+}
+function restaurar(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let d; try { d = JSON.parse(r.result); } catch (x) { return toast('Arquivo inválido'); }
+    if (!d || !Array.isArray(d.itens)) return toast('Não é um backup do Materiais');
+    modal({ titulo: 'Restaurar backup?', perigo: true, ok: 'Restaurar', corpo: `<p>${d.itens.length} materiais e ${(d.contagens || []).length} contagens substituirão os dados deste aparelho${Nuvem.ativa() ? ' e serão enviados à nuvem' : ''}.</p>`,
+      aoConfirmar() { d.dispositivo = D().dispositivo; d.rascunho = null; localStorage.setItem(CHAVE, JSON.stringify(d)); DB.carregar(); DB.salvar(); toast('Backup restaurado'); render(); } });
+  };
+  r.readAsText(f); e.target.value = '';
+}
+
+/* ---------- Nuvem (Supabase) ----------
+   Mesmo mecanismo da Ferramentaria: grava no aparelho e envia quando há internet.
+   Envio: só o que mudou (impressão digital por registro). Recebimento: pelo sinc_em do servidor.
+   Conflito no mesmo registro: vale o último envio; estorno sempre prevalece. */
+const SUPA_URL = 'https://blizyewnlcyaxizwlzdk.supabase.co';
+const SUPA_KEY = 'sb_publishable_F82gpF8qtfC-cezTvYzEwQ_n0ZGAR4A';  // chave pública (segura com as regras de acesso)
+const COLECOES = ['config', 'itens', 'movs', 'contagens', 'reservas'];
+const TABELA = { config: 'mat_config', itens: 'mat_itens', movs: 'mat_movs', contagens: 'mat_contagens', reservas: 'mat_reservas' };
+
+function estavel(v) {
+  if (Array.isArray(v)) return '[' + v.map(estavel).join(',') + ']';
+  if (v && typeof v === 'object') return '{' + Object.keys(v).filter((k) => v[k] !== undefined).sort().map((k) => JSON.stringify(k) + ':' + estavel(v[k])).join(',') + '}';
+  return v === undefined ? 'null' : JSON.stringify(v);
+}
+function digital(obj) {
+  const t = estavel(obj);
+  let h1 = 0x811c9dc5, h2 = 0x01000193;
+  for (let i = 0; i < t.length; i++) { const c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619); h2 = Math.imul(h2 ^ c, 2246822519); }
+  return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36) + t.length.toString(36);
+}
+
+const Nuvem = {
+  sessao: null, sinc: null, rodando: false, deNovo: false, timer: null, estado: 'ok', erro: '',
+  carregar() {
+    try { this.sessao = JSON.parse(localStorage.getItem('materiais_sessao')); } catch (e) { this.sessao = null; }
+    try { this.sinc = JSON.parse(localStorage.getItem('materiais_sinc')); } catch (e) { this.sinc = null; }
+    if (!this.sinc) this.sinc = { cursor: {}, enviado: {}, ultima: null };
+    for (const c of COLECOES) this.sinc.enviado[c] = this.sinc.enviado[c] || {};
+  },
+  guardar() {
+    try {
+      localStorage.setItem('materiais_sessao', JSON.stringify(this.sessao));
+      localStorage.setItem('materiais_sinc', JSON.stringify(this.sinc));
+    } catch (e) {}
+  },
+  ativa() { return !!this.sessao; },
+  precisaLogin() {
+    let local = false;
+    try { local = localStorage.getItem('materiais_modo') === 'local'; } catch (e) {}
+    return this.sessao ? !!this.sessao.expirada : !local;
+  },
+  sair() {
+    this.sessao = null; this.sinc = { cursor: {}, enviado: {}, ultima: null };
+    for (const c of COLECOES) this.sinc.enviado[c] = {};
+    this.guardar();
+  },
+  async auth(corpo, tipo) {
+    const r = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=${tipo}`, { method: 'POST', headers: { apikey: SUPA_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(d.error_description || d.msg || d.message || 'Falha no login'); e.status = r.status; throw e; }
+    this.sessao = { token: d.access_token, refresh: d.refresh_token, expira: Date.now() + d.expires_in * 1000, email: (d.user && d.user.email) || (this.sessao && this.sessao.email), papel: this.sessao && this.sessao.papel };
+    this.guardar();
+  },
+  async token() {
+    if (Date.now() > this.sessao.expira - 60000) {
+      try { await this.auth({ refresh_token: this.sessao.refresh }, 'refresh_token'); }
+      catch (e) { if (e.status === 400 || e.status === 401 || e.status === 403) { this.sessao.expirada = true; this.guardar(); } throw e; }
+    }
+    return this.sessao.token;
+  },
+  async api(caminho, opt = {}) {
+    const r = await fetch(`${SUPA_URL}/rest/v1/${caminho}`, Object.assign({}, opt, {
+      headers: Object.assign({ apikey: SUPA_KEY, Authorization: 'Bearer ' + await this.token(), 'Content-Type': 'application/json' }, opt.headers || {})
+    }));
+    if (!r.ok) { const e = new Error(`${r.status} ${(await r.text()).slice(0, 200)}`); e.status = r.status; throw e; }
+    const txt = await r.text();
+    return txt ? JSON.parse(txt) : null;
+  },
+  async carregarPapel() {
+    let papel = this.sessao.papel || 'tecnico';
+    try { const r = await this.api('perfis?select=papel'); papel = (r && r[0] && r[0].papel) || 'tecnico'; }
+    catch (e) { if (e instanceof TypeError || (this.sessao && this.sessao.expirada)) throw e; }
+    const mudou = this.sessao.papel !== papel;
+    this.sessao.papel = papel; this.guardar();
+    return mudou;
+  },
+  // Técnico só envia contagens sem estorno (a nuvem também recusa o resto)
+  podeEnviar(col, obj) {
+    if (this.sessao.papel === 'supervisor') return true;
+    return col === 'contagens' && !!obj && !obj.estorno;
+  },
+  registros(col) {
+    if (col === 'config') return [['config', D().config]];
+    return D()[col].map((x) => [x.id, x]);
+  },
+  obter(col, id) { return col === 'config' ? D().config : D()[col].find((x) => x.id === id); },
+  aplicar(col, id, dados) {
+    versao++;
+    if (col === 'config') { DB.dados.config = Object.assign(DB.vazio().config, dados); return; }
+    const atual = D()[col].find((x) => x.id === id);
+    if (atual) { for (const k of Object.keys(atual)) delete atual[k]; Object.assign(atual, dados); }
+    else D()[col].push(dados);
+  },
+  contarPendentes() {
+    if (!this.ativa()) return 0;
+    let n = 0;
+    for (const col of COLECOES) { const env = this.sinc.enviado[col]; for (const [id, obj] of this.registros(col)) if (this.podeEnviar(col, obj) && env[id] !== digital(obj)) n++; }
+    return n;
+  },
+  receber(col, linha, primeira) {
+    const env = this.sinc.enviado[col];
+    const dRemoto = digital(linha.dados);
+    const local = this.obter(col, linha.id);
+    if (local) {
+      const dLocal = digital(local);
+      if (dLocal === dRemoto) { env[linha.id] = dRemoto; return false; }
+      // Alterado aqui e ainda não enviado: o envio atualiza a nuvem (exceto: 1ª sincronização dos ajustes,
+      // registros que este nível não envia, e estorno feito pelo supervisor, que sempre prevalece)
+      if (env[linha.id] !== dLocal && !(col === 'config' && primeira) && this.podeEnviar(col, local) && !linha.dados.estorno) return false;
+    }
+    this.aplicar(col, linha.id, linha.dados);
+    env[linha.id] = dRemoto;
+    return true;
+  },
+  agendar(ms = 1500) {
+    if (!this.ativa()) return;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.sincronizar(), ms);
+  },
+  async sincronizar() {
+    if (!this.ativa() || this.sessao.expirada) return;
+    if (this.rodando) { this.deNovo = true; return; }
+    if (!navigator.onLine) { this.estado = 'offline'; this.mostrar(); return; }
+    this.rodando = true; this.estado = 'enviando'; this.mostrar();
+    let chegou = false;
+    try {
+      if (await this.carregarPapel()) chegou = true;
+      for (const col of COLECOES) {
+        const primeira = this.sinc.cursor[col] == null;
+        const cursor = this.sinc.cursor[col] || 0;
+        const desde = new Date(Math.max(0, cursor - 120000)).toISOString();
+        let maior = cursor;
+        for (let offset = 0; ; offset += 1000) {
+          const linhas = await this.api(`${TABELA[col]}?select=id,dados,sinc_em&sinc_em=gte.${encodeURIComponent(desde)}&order=sinc_em.asc,id.asc&limit=1000&offset=${offset}`);
+          for (const l of linhas) { if (this.receber(col, l, primeira)) chegou = true; maior = Math.max(maior, Date.parse(l.sinc_em)); }
+          if (linhas.length < 1000) break;
+        }
+        this.sinc.cursor[col] = maior;
+      }
+      if (chegou) DB.salvar(true);
+      for (const col of COLECOES) {
+        const env = this.sinc.enviado[col];
+        const lote = [];
+        for (const [id, obj] of this.registros(col)) { if (!this.podeEnviar(col, obj)) continue; const d = digital(obj); if (env[id] !== d) lote.push({ id, d, corpo: JSON.stringify({ id, dados: obj, dispositivo: D().dispositivo }) }); }
+        for (let i = 0; i < lote.length; i += 200) {
+          const parte = lote.slice(i, i + 200);
+          await this.api(`${TABELA[col]}?on_conflict=id`, { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: '[' + parte.map((x) => x.corpo).join(',') + ']' });
+          for (const x of parte) env[x.id] = x.d;
+        }
+      }
+      this.sinc.ultima = agora();
+      this.estado = 'ok'; this.erro = '';
+    } catch (e) {
+      this.estado = !navigator.onLine || e instanceof TypeError ? 'offline' : 'erro';
+      this.erro = e.message;
+      if (this.sessao && this.sessao.expirada) { this.guardar(); this.rodando = false; render(); return; }
+    }
+    this.guardar();
+    this.rodando = false;
+    this.mostrar();
+    const ae = document.activeElement;
+    if (chegou && !$('#dlg').open && !(rota().nome === 'contar' && D().rascunho) && !(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) render();
+    if (this.deNovo) { this.deNovo = false; this.agendar(300); }
+  },
+  textoEstado() {
+    const n = this.contarPendentes();
+    const ult = this.sinc.ultima ? 'Última sincronização: ' + fmt(this.sinc.ultima) : 'Ainda não sincronizado';
+    if (this.estado === 'offline') return `Sem internet. ${n} alteração(ões) serão enviadas quando o sinal voltar.`;
+    if (this.estado === 'erro') return `Erro ao sincronizar (${this.erro.slice(0, 80)}). ${n} pendente(s).`;
+    if (this.estado === 'enviando') return 'Sincronizando…';
+    return `${ult}.${n ? ` ${n} pendente(s).` : ' Tudo salvo na nuvem.'}`;
+  },
+  mostrar() {
+    const el = document.getElementById('sincSt');
+    if (!el) return;
+    const n = this.estado === 'enviando' ? 0 : this.contarPendentes();
+    el.className = 'sinc ' + this.estado;
+    el.textContent = this.estado === 'enviando' ? '☁ ↻' : this.estado === 'offline' ? `☁ sem sinal${n ? ' · ' + n : ''}` : this.estado === 'erro' ? '☁ ⚠' : n ? `☁ ${n}` : '☁ ✓';
+  }
+};
+
+/* ---------- Login ---------- */
+function telaLogin() {
+  const exp = Nuvem.sessao && Nuvem.sessao.expirada;
+  $('#top').innerHTML = LOGO_RUMO + '<span class="divisor"></span><h1>Materiais</h1>';
+  $('#tabs').innerHTML = '';
+  $('#app').innerHTML = `
+    <div style="max-width:460px;margin:0 auto">
+    <div class="login-marca">${LOGO_RUMO}<div>GESTÃO DE MATERIAIS - REVISTAMENTO ZTO</div></div>
+    <div class="card stack" style="margin-top:16px">
+      <div style="font-size:20px;font-weight:800">${exp ? 'Entre de novo' : 'Entrar na conta da equipe'}</div>
+      <p class="small muted" style="margin:0">${exp ? 'A sessão expirou. Os dados deste aparelho estão guardados e serão enviados ao entrar.' : 'Use o mesmo login da Ferramentaria. Os dados ficam na nuvem e o app funciona sem internet.'}</p>
+      <div><label class="f" for="lgEmail">E-mail</label><input id="lgEmail" type="email" autocomplete="username" inputmode="email" value="${esc(Nuvem.sessao ? Nuvem.sessao.email : '')}"></div>
+      <div><label class="f" for="lgSenha">Senha</label><input id="lgSenha" type="password" autocomplete="current-password"></div>
+      <button class="btn big primary" data-a="entrar">Entrar</button>
+      ${exp ? '' : '<button class="btn full" data-a="modo-local">Usar sem nuvem (só neste aparelho)</button>'}
+    </div></div>`;
+  $('#lgSenha').addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
+}
+async function entrar() {
+  const email = $('#lgEmail').value.trim(), senha = $('#lgSenha').value;
+  if (!email || !senha) return toast('Informe e-mail e senha');
+  if (!navigator.onLine) return toast('É preciso internet para entrar');
+  const b = $('[data-a=entrar]'); b.disabled = true; b.textContent = 'Entrando…';
+  try {
+    await Nuvem.auth({ email, password: senha }, 'password');
+    try { localStorage.removeItem('materiais_modo'); } catch (e) {}
+    ir('inicio'); render();
+    toast('Conectado. Sincronizando…');
+    await Nuvem.sincronizar();
+    toast(Nuvem.estado === 'ok' ? 'Dados sincronizados com a nuvem' : Nuvem.textoEstado());
+    render();
+  } catch (e) {
+    b.disabled = false; b.textContent = 'Entrar';
+    toast(e.status === 400 ? 'E-mail ou senha incorretos' : e instanceof TypeError ? 'Sem conexão com a nuvem' : 'Erro: ' + e.message);
+  }
+}
+function trocarLogin() {
+  if (!navigator.onLine) return toast('É preciso internet para trocar de login');
+  modal({
+    titulo: 'Trocar de login',
+    corpo: `<div class="stack">
+      <p class="small muted" style="margin:0">Agora: <b>${esc(Nuvem.sessao.email)}</b> (${supervisor() ? 'Supervisor' : 'Técnico'}). Os dados do aparelho continuam; muda só o que este login pode fazer.</p>
+      <div><label class="f" for="tlEmail">E-mail</label><input id="tlEmail" type="email" inputmode="email" autocomplete="username"></div>
+      <div><label class="f" for="tlSenha">Senha</label><input id="tlSenha" type="password" autocomplete="current-password"></div></div>`,
+    ok: 'Entrar',
+    validar(dlg) { if (!dlg.querySelector('#tlEmail').value.trim() || !dlg.querySelector('#tlSenha').value) { toast('Informe e-mail e senha'); return false; } return true; },
+    async aoConfirmar(dlg) {
+      const email = dlg.querySelector('#tlEmail').value.trim(), senha = dlg.querySelector('#tlSenha').value;
+      toast('Entrando…');
+      await Nuvem.sincronizar();
+      const anterior = Nuvem.sessao;
+      try { Nuvem.sessao = Object.assign({}, anterior, { papel: null }); await Nuvem.auth({ email, password: senha }, 'password'); }
+      catch (e) { Nuvem.sessao = anterior; Nuvem.guardar(); return toast(e.status === 400 ? 'E-mail ou senha incorretos' : 'Não foi possível entrar: ' + e.message); }
+      await Nuvem.sincronizar();
+      toast(`Conectado como ${Nuvem.sessao.email} (${supervisor() ? 'Supervisor' : 'Técnico'})`);
+      render();
+    }
+  });
+  setTimeout(() => { const i = $('#tlEmail'); if (i) i.focus(); }, 50);
+}
+
+/* ---------- Modal genérico ---------- */
+function modal({ titulo, corpo, ok = 'OK', cancelar = 'Cancelar', perigo, validar, aoConfirmar, aoAbrir }) {
+  const velho = $('#dlg');
+  if (velho.open) velho.close();
+  const dlg = velho.cloneNode(false);
+  velho.replaceWith(dlg);
+  dlg.innerHTML = `<div class="dh">${esc(titulo)}</div><div class="db">${corpo}</div>
+    <div class="df">${cancelar ? `<button class="btn" data-m="x">${esc(cancelar)}</button>` : ''}<button class="btn ${perigo ? 'danger' : 'primary'}" data-m="ok">${esc(ok)}</button></div>`;
+  dlg.onclick = (e) => {
+    const b = e.target.closest('[data-m]'); if (!b) return;
+    if (b.dataset.m === 'x') return dlg.close();
+    if (validar && !validar(dlg)) return;
+    dlg.close();
+    aoConfirmar && aoConfirmar(dlg);
+  };
+  aoAbrir && aoAbrir(dlg);
+  dlg.showModal();
+}
+
+
+
+/* ---------- Ações ---------- */
+const ACOES = {
+  voltar: () => (history.length > 1 ? history.back() : ir('inicio')),
+  ir: (el) => ir(el.dataset.h),
+  'novo-item': () => formItem(null),
+  'editar-item': (el) => formItem(itemPorId(el.dataset.i)),
+  abastecer: (el) => formAbastecer(el.dataset.c),
+  'contar-caixa': (el) => { if (D().rascunho) return ir('contar'); ir('contar/' + encodeURIComponent(el.dataset.c)); },
+  importar: formImportar,
+  estornar: (el) => formEstornar(D().movs.find((m) => m.id === el.dataset.m)),
+  'estornar-cont': (el) => formEstornarContagem(D().contagens.find((c) => c.id === el.dataset.c)),
+  desativar: (el) => {
+    const i = itemPorId(el.dataset.i);
+    modal({ titulo: 'Desativar material?', perigo: true, ok: 'Desativar', corpo: `<p><b>${esc(i.nome)}</b> sai das caixas, das contagens e da análise de reserva. O histórico continua. Dá para reativar depois.</p>`,
+      aoConfirmar() { i.ativo = false; i.atualizadoEm = agora(); DB.salvar(); render(); } });
+  },
+  reativar: (el) => { const i = itemPorId(el.dataset.i); i.ativo = true; i.atualizadoEm = agora(); DB.salvar(); toast('Material reativado'); render(); },
+  'iniciar-cont': () => {
+    const cx = $('#cCaixa .on'), tu = $('#cTurno .on');
+    if (!cx) return toast('Escolha a caixa');
+    if (!tu) return toast('Escolha o turno');
+    const sel = $('#cResp');
+    let nome, matricula;
+    if (sel && sel.value && sel.value !== '__outro') ({ nome, matricula } = pessoa(sel.value));
+    else { nome = $('#cNome').value.trim(); matricula = $('#cMat').value.trim().toUpperCase(); }
+    if (!nome) return toast('Informe quem está contando');
+    if (!matricula) return toast('Informe a matrícula');
+    D().rascunho = { id: uid(), caixaId: cx.dataset.v, turno: tu.dataset.v, responsavel: nome, matricula, iniciadaEm: agora(), contagens: {} };
+    DB.salvar(true); ir('contar'); render();
+  },
+  'cancelar-cont': () => modal({ titulo: 'Descartar contagem?', corpo: '<p>As quantidades digitadas até agora serão perdidas.</p>', ok: 'Descartar', perigo: true, aoConfirmar() { D().rascunho = null; filtroCont = ''; DB.salvar(true); render(); } }),
+  'fechar-cont': fecharContagem,
+  menos: (el) => { const id = el.closest('.cnt').dataset.item; const c = D().rascunho.contagens[id]; setContagem(id, c == null ? 0 : Math.max(0, c - 1)); },
+  mais: (el) => { const id = el.closest('.cnt').dataset.item; const c = D().rascunho.contagens[id]; setContagem(id, c == null ? 1 : c + 1); },
+  igual: (el) => { const id = el.closest('.cnt').dataset.item; setContagem(id, saldo(D().rascunho.caixaId, id)); },
+  'compartilhar-cont': (el) => compartilharTexto(textoContagem(D().contagens.find((c) => c.id === el.dataset.c))),
+  'gerar-reserva': gerarReserva,
+  'sug-limpar': () => { sugEditada = {}; VIEWS.reserva(); },
+  receber: (el) => formReceber(D().reservas.find((r) => r.id === el.dataset.r)),
+  'numero-res': (el) => {
+    const r = D().reservas.find((x) => x.id === el.dataset.r);
+    modal({ titulo: 'Nº da reserva no SAP', ok: 'Salvar', corpo: `<input id="rNum2" inputmode="numeric" value="${esc(r.numero || '')}">`,
+      aoAbrir(dlg) { setTimeout(() => dlg.querySelector('#rNum2').focus(), 50); },
+      aoConfirmar(dlg) { r.numero = dlg.querySelector('#rNum2').value.trim(); DB.salvar(); render(); } });
+  },
+  'encerrar-res': (el) => {
+    const r = D().reservas.find((x) => x.id === el.dataset.r);
+    modal({ titulo: 'Encerrar reserva?', ok: 'Encerrar', perigo: true,
+      corpo: `<p class="small">O que não chegou deixa de constar como reservado e volta a aparecer na sugestão da próxima análise.</p><label class="f" for="encMot">Motivo</label><input id="encMot" placeholder="Ex.: item cancelado no SAP">`,
+      aoConfirmar(dlg) { r.status = 'encerrada'; r.encerrada = { por: quem(), em: agora(), motivo: dlg.querySelector('#encMot').value.trim() }; DB.salvar(); toast('Reserva encerrada'); render(); } });
+  },
+  'compartilhar-res': (el) => compartilharTexto(textoReserva(D().reservas.find((r) => r.id === el.dataset.r))),
+  'csv-res': (el) => exportarReserva(D().reservas.find((r) => r.id === el.dataset.r)),
+  'rel-csv': exportarConsumo,
+  'estoque-csv': exportarEstoque,
+  imprimir: () => window.print(),
+  'rel-resumo': () => compartilharTexto(resumoTexto()),
+  'salvar-cfg': () => {
+    const linhas = (s) => [...new Set($(s).value.split('\n').map((x) => x.trim()).filter(Boolean))];
+    const cfg = D().config;
+    cfg.unidade = $('#cfUn').value.trim();
+    salvarCaixas($('#cfCx').value);
+    cfg.turnos = linhas('#cfTur'); if (!cfg.turnos.length) cfg.turnos = ['Turno A', 'Turno B', 'Turno C'];
+    cfg.equipe = linhas('#cfEq').map((p) => { const x = pessoa(p); return x.nome + (x.matricula ? '; ' + x.matricula.toUpperCase() : ''); }).sort((a, b) => a.localeCompare(b, 'pt'));
+    const un = [...new Set($('#cfUnid').value.split(',').map((x) => x.trim()).filter(Boolean))];
+    if (un.length) cfg.unidades = un;
+    DB.salvar(); toast('Ajustes salvos'); render();
+  },
+  entrar: () => entrar(),
+  'modo-local': () => modal({ titulo: 'Usar sem nuvem?', corpo: '<p>Os dados ficarão só neste aparelho. Dá para entrar na conta depois, em Ajustes; o que estiver aqui sobe junto.</p>', ok: 'Usar sem nuvem',
+    aoConfirmar() { try { localStorage.setItem('materiais_modo', 'local'); } catch (e) {} render(); } }),
+  'ir-login': () => { try { localStorage.removeItem('materiais_modo'); } catch (e) {} render(); },
+  'sinc-agora': async () => { await Nuvem.sincronizar(); toast(Nuvem.estado === 'ok' ? 'Sincronizado' : Nuvem.textoEstado()); render(); },
+  'sinc-info': () => toast(Nuvem.textoEstado()),
+  'trocar-login': trocarLogin,
+  sair: async () => {
+    if (navigator.onLine) await Nuvem.sincronizar();
+    const n = Nuvem.contarPendentes();
+    modal({ titulo: 'Sair da conta neste aparelho?', perigo: true, ok: 'Sair',
+      corpo: `<p>Os dados continuam salvos na nuvem; a cópia deste aparelho será apagada.</p>${n ? `<p style="color:var(--bad)"><b>Atenção:</b> ${n} alteração(ões) ainda não foram enviadas e serão perdidas.</p>` : ''}${D().rascunho ? '<p>A contagem em andamento será descartada.</p>' : ''}`,
+      aoConfirmar() { const disp = D().dispositivo; DB.dados = DB.vazio(); DB.dados.dispositivo = disp; DB.salvar(true); Nuvem.sair(); ir('inicio'); render(); } });
+  },
+  backup: () => baixar(`materiais-backup-${hoje()}.json`, JSON.stringify(D(), null, 1), 'application/json'),
+  restaurar: () => $('#arqBackup').click(),
+  apagar: () => modal({ titulo: 'Apagar todos os dados?', corpo: '<p>Materiais, caixas, contagens, reservas e ajustes deste aparelho serão apagados. <b>Não dá para desfazer.</b> Faça um backup antes.</p>', ok: 'Apagar tudo', perigo: true,
+    aoConfirmar() { DB.dados = DB.vazio(); DB.salvar(); toast('Dados apagados'); ir('inicio'); render(); } })
+};
+
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-a]');
+  if (!el || el.tagName === 'INPUT' || el.closest('dialog')) return;
+  const fn = ACOES[el.dataset.a];
+  if (fn && SO_SUPERVISOR.has(el.dataset.a) && !supervisor()) { e.preventDefault(); return toast('Somente o supervisor pode fazer isso'); }
+  if (fn) { e.preventDefault(); fn(el); }
+});
+document.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.dataset.cq != null) setContagem(t.dataset.cq, t.value);
+  else if (t.dataset.sug != null) {
+    const v = num(t.value);
+    sugEditada[t.dataset.sug] = v > 0 ? r3(v) : 0;
+    const pos = window.scrollY; VIEWS.reserva(); window.scrollTo(0, pos);
+  }
+});
+$('#arqBackup').addEventListener('change', restaurar);
+window.addEventListener('hashchange', render);
+
+/* ---------- Início ---------- */
+DB.carregar();
+Nuvem.carregar();
+render();
+Nuvem.sincronizar();
+window.addEventListener('online', () => Nuvem.sincronizar());
+window.addEventListener('offline', () => { Nuvem.estado = 'offline'; Nuvem.mostrar(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') Nuvem.sincronizar(); });
+setInterval(() => { if (document.visibilityState === 'visible') Nuvem.sincronizar(); }, 60000);
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+</script>
+</body>
+</html>

@@ -53,3 +53,4 @@ A equipe conta o estoque, o app calcula o consumo e, na análise semanal, gera a
 - SQL atualizado (visão `v_mat_caixas_saldo`). Testada localmente com os 12 itens reais e 10 caixas.
 - Caixas 01 a 10 já vêm cadastradas (sem nome de posto). Programador da reserva: caique@ferramentaria.app (supervisor).
 - Publicado em 05/10/2026: https://mausan2013-dotcom.github.io/materiais/ (atualizar com `publica-materiais`).
+- v3.1 (05/10/2026): botão "Carregar os 12 materiais das caixas amarelas" (supervisor, lista embutida, ids fixos `mat-<SAP>`: não duplica). Sincronização testada com nuvem simulada (supervisor → técnico → supervisor).

@@ -206,6 +206,8 @@ const CHAVE = 'materiais_v1';
 const TIPOS = ['Consumível', 'Peça de reposição', 'EPI'];
 const STATUS_RES = { aberta: 'Aberta', parcial: 'Recebida em parte', recebida: 'Recebida', encerrada: 'Encerrada' };
 const DIAS_CONTAGEM_VELHA = 7;
+// Formulário "Materiais das caixas amarelas" (SAP, nome) — todos un, mín. 5, máx. 15
+const LISTA_CAIXAS = [["58551R", "TRAVA DE ENGATE DUAL 3/8\"X2\"X4\""], ["115890", "TRAVA PATA PINO \"T\""], ["116002", "PINO T SEM ABA PARA CHAVETA DO ENGATE"], ["50865", "PARAFUSO FRANCES 3/4'' X 2.1/2'' UNC"], ["2838", "PORCA SEXTAVADA AUTOTRAVANTE 3/4POL"], ["11927", "PINO MANDIBULA ENGATE TIPO E"], ["142759", "PORCA CASTELO SEXTA. C/ COROA M20 MA 2.5"], ["138339", "PARAFUSO SX 8.8 M20X185MM ABRAC TIPO F"], ["38693", "PARAFUSO SEXTAVADO 7/8\"X 4.1/2\" UNC"], ["1672", "PORCA 7/8\""], ["107955", "DISP ANTIQ BARRA COMPRESSAO BIT LARGA"], ["3688", "CHAVETA SAPATA FREIO VAGOES"]];
 
 /* ---------- Armazenamento ---------- */
 let versao = 0;  // muda a cada alteração: invalida o cálculo de saldos
@@ -286,7 +288,7 @@ const caixaPorId = (id) => D().config.caixas.find((c) => c.id === id);
 const nomeCaixa = (c) => (c ? `Caixa ${c.numero}${c.posto ? ' · ' + c.posto : ''}` : 'Caixa removida');
 const supervisor = () => !Nuvem.ativa() || Nuvem.sessao.papel === 'supervisor';
 const SO_SUPERVISOR = new Set(['novo-item', 'editar-item', 'abastecer', 'importar', 'desativar', 'reativar', 'estornar', 'estornar-cont',
-  'gerar-reserva', 'receber', 'numero-res', 'encerrar-res', 'salvar-cfg', 'backup', 'restaurar', 'apagar', 'sair']);
+  'gerar-reserva', 'receber', 'carregar-lista', 'numero-res', 'encerrar-res', 'salvar-cfg', 'backup', 'restaurar', 'apagar', 'sair']);
 const contagensValidas = () => D().contagens.filter((c) => !c.estorno);
 const K = (cx, it) => cx + '|' + it;
 
@@ -400,7 +402,7 @@ VIEWS.inicio = () => {
   const sup = supervisor();
   if (!cxs.length || !itens.length) {
     $('#app').innerHTML = `<div class="status neutral"><div class="big">Configuração inicial</div><div class="muted">${sup ? 'Importe a lista de materiais das caixas em Materiais.' : 'O supervisor ainda não cadastrou as caixas e os materiais.'}</div></div>
-      ${sup ? `<div class="stack">${!cxs.length ? '<button class="btn big primary" data-a="ir" data-h="ajustes">Cadastrar caixas</button>' : ''}${!itens.length ? '<button class="btn big primary" data-a="importar">Importar lista de materiais</button>' : ''}</div>` : ''}`;
+      ${sup ? `<div class="stack">${!cxs.length ? '<button class="btn big primary" data-a="ir" data-h="ajustes">Cadastrar caixas</button>' : ''}${!itens.length ? '<button class="btn big primary" data-a="carregar-lista">Carregar os 12 materiais das caixas amarelas</button><button class="btn full" data-a="importar">Importar outra lista</button>' : ''}</div>` : ''}`;
     return;
   }
   const velhas = cxs.filter((c) => caixaVelha(c.id));
@@ -727,7 +729,7 @@ VIEWS.materiais = () => {
   const todos = ativos(), cxs = caixas();
   const inativos = D().itens.filter((i) => i.ativo === false);
   $('#app').innerHTML = `
-    ${sup ? '<div class="row" style="margin-bottom:12px"><button class="btn primary grow" data-a="novo-item">+ Novo material</button><button class="btn" data-a="importar">Importar lista</button></div>' : ''}
+    ${sup ? `${todos.length ? '' : '<button class="btn big primary" data-a="carregar-lista" style="margin-bottom:10px">Carregar os 12 materiais das caixas amarelas</button>'}<div class="row" style="margin-bottom:12px"><button class="btn primary grow" data-a="novo-item">+ Novo material</button><button class="btn" data-a="importar">Importar lista</button></div>` : ''}
     <p class="small muted" style="margin:0 4px 8px">Todo material ativo faz parte de todas as caixas, com o mesmo mínimo e máximo.</p>
     <div class="list">${todos.map((i) => { const ab = cxs.filter((c) => abaixoMin(c.id, i)).length; return `
       <a class="li" href="#item/${encodeURIComponent(i.id)}"><div class="grow"><div class="t">${esc(i.nome)}</div>
@@ -1369,6 +1371,17 @@ const ACOES = {
   abastecer: (el) => formAbastecer(el.dataset.c),
   'contar-caixa': (el) => { if (D().rascunho) return ir('contar'); ir('contar/' + encodeURIComponent(el.dataset.c)); },
   importar: formImportar,
+  'carregar-lista': () => {
+    // ids fixos pelo código SAP: tocar em dois aparelhos não duplica
+    let n = 0;
+    for (const [codigo, nome] of LISTA_CAIXAS) {
+      const id = 'mat-' + codigo;
+      if (D().itens.some((x) => x.id === id || (x.codigo || '').toLowerCase() === codigo.toLowerCase())) continue;
+      D().itens.push({ id, codigo, nome, tipo: 'Peça de reposição', unidade: 'un', minimo: 5, maximo: 15, custo: 0, ca: '', caValidade: '', obs: '', ativo: true, criadoEm: agora(), atualizadoEm: agora() });
+      n++;
+    }
+    DB.salvar(); toast(n ? `${n} materiais carregados` : 'Os materiais já estavam cadastrados'); render();
+  },
   estornar: (el) => formEstornar(D().movs.find((m) => m.id === el.dataset.m)),
   'estornar-cont': (el) => formEstornarContagem(D().contagens.find((c) => c.id === el.dataset.c)),
   desativar: (el) => {

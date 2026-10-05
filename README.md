@@ -51,3 +51,5 @@ A equipe conta o estoque, o app calcula o consumo e, na análise semanal, gera a
 - Lista real recebida (formulário "Materiais das caixas amarelas"): 12 itens, mín. 5 / máx. 15, 10 caixas por posto.
 - Saldo, contagem, reserva e recebimento passam a ser por caixa. Setores saem (o posto fica na caixa).
 - SQL atualizado (visão `v_mat_caixas_saldo`). Testada localmente com os 12 itens reais e 10 caixas.
+- Caixas 01 a 10 já vêm cadastradas (sem nome de posto). Programador da reserva: caique@ferramentaria.app (supervisor).
+- Publicado em 05/10/2026: https://mausan2013-dotcom.github.io/materiais/ (atualizar com `publica-materiais`).

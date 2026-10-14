@@ -152,6 +152,24 @@ tr.muted td { color: var(--muted); }
 .cx .n { font-size: 26px; font-weight: 800; color: var(--title); line-height: 1.1; }
 .cx .p { font-weight: 700; font-size: 14px; color: var(--title); }
 .cx .s { font-size: 12px; margin: 2px 0 6px; }
+
+/* escala (igual ao app Revistamento) e contagem do dia de retorno */
+.escala { border-collapse: separate; border-spacing: 3px; font-size: 13px; }
+.escala th { font-size: 12px; color: var(--muted); font-weight: 700; padding: 2px 4px; text-align: center; white-space: nowrap; }
+.escala th span { font-weight: 600; font-size: 11px; }
+.escala td { width: 38px; height: 32px; text-align: center; font-weight: 800; border-radius: 4px; position: relative; }
+.escala td.e6 { background: #fff3c4; color: #5a4300; } .escala td.e14 { background: #e3f2fb; color: #0b6fa8; } .escala td.e22 { background: #043865; color: #fff; }
+.escala td.eR, .escala td.eF { background: var(--bg); color: var(--muted); }
+.escala td.agora { box-shadow: 0 0 0 3px var(--accent); }
+.escala td.ret { box-shadow: inset 0 0 0 2px var(--warn); }
+.escala td small { position: absolute; right: 1px; top: -1px; font-size: 11px; line-height: 1; }
+.pts { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+.pt { min-width: 44px; padding: 6px 4px; border-radius: 6px; text-align: center; font-weight: 800; font-size: 13px; border: 2px solid var(--line); color: var(--muted); background: var(--bg); text-decoration: none; }
+.pt.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.pt.tarde { background: #e3f2fb; border-color: #0b6fa8; color: #0b6fa8; }
+.pt.falta { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
+.pt.perdeu { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+.cx.ret-ok { border-top-color: var(--ok); } .cx.ret-falta { border-top-color: var(--warn); } .cx.ret-perdeu { border-top-color: var(--bad); }
 .ctl .same { white-space: nowrap; }
 .mob { color: var(--ink); }
 .row.wrap > .btn.grow { flex: 1 1 calc(50% - 10px); }
@@ -218,7 +236,7 @@ const DB = {
       versao: 3,
       dispositivo: uid(),
       // caixas = [{id, numero, posto, ativa}]; equipe = ["Nome; CS123"]
-      config: { unidade: '', caixas: Array.from({ length: 10 }, (_, k) => ({ id: 'cx' + p2(k + 1), numero: p2(k + 1), posto: '', ativa: true })), turnos: ['Turno A', 'Turno B', 'Turno C'], equipe: [],
+      config: { unidade: '', caixas: Array.from({ length: 10 }, (_, k) => ({ id: 'cx' + p2(k + 1), numero: p2(k + 1), posto: '', ativa: true })), turnos: ['Turno A', 'Turno B', 'Turno C', 'Turno D'], equipe: [],
         unidades: ['un', 'par', 'cx', 'pct', 'kg', 'm', 'L', 'rolo'] },
       itens: [],      // {id, codigo, nome, tipo, unidade, minimo, maximo, custo, ca, caValidade, obs, ativo, criadoEm, atualizadoEm} — todo item ativo existe em todas as caixas
       contagens: [],  // {id, caixaId, caixa, posto, turno, responsavel, matricula, iniciadaEm, fechadaEm, por, linhas:[{itemId, codigo, nome, unidade, anterior, contado, custo}], estorno?}
@@ -264,6 +282,56 @@ const fmtDia = (ts) => (ts ? fmt(ts, true).slice(0, 10) : '');
 function fmtData(s) { if (!s) return ''; const [a, m, d] = s.slice(0, 10).split('-'); return `${d}/${m}/${a}`; }
 function hoje() { const d = new Date(); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
 const diasDesde = (ts) => Math.floor((Date.now() - new Date(ts)) / 86400000);
+
+// ---------- escala 8 horas: a MESMA do app Revistamento (ciclo de 8 dias; deslocamento vs 01/10/2026) ----------
+// Dia de retorno = primeiro dia de serviço (turno 06–14) depois da folga: nele todas as caixas devem ser contadas.
+const CICLO = ['6', '6', '14', '14', '22', '22', 'R', 'F'];
+const DESLOC = { A: 6, B: 4, C: 2, D: 0 };
+const BASE_ESCALA = new Date(2026, 9, 1);
+const HORARIO = { '6': '06:00–14:00', '14': '14:00–22:00', '22': '22:00–06:00' };
+const EQUIPES = ['A', 'B', 'C', 'D'];
+const diaZero = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const escDias = (d) => Math.round((diaZero(d) - BASE_ESCALA) / 864e5);
+const escalaDia = (eq, d) => CICLO[(((escDias(d) - DESLOC[eq]) % 8) + 8) % 8];
+const equipeNoHorario = (d, h) => EQUIPES.find((e) => escalaDia(e, d) === h);
+const somaDias = (d, n) => { const x = diaZero(d); x.setDate(x.getDate() + n); return x; };
+const ehRetorno = (eq, d) => escalaDia(eq, d) === '6' && escalaDia(eq, somaDias(d, -1)) === 'F';
+function emServico(a = new Date()) {
+  const h = a.getHours();
+  if (h >= 6 && h < 14) return { equipe: equipeNoHorario(a, '6'), h: '6', data: diaZero(a) };
+  if (h >= 14 && h < 22) return { equipe: equipeNoHorario(a, '14'), h: '14', data: diaZero(a) };
+  const dia = h < 6 ? somaDias(a, -1) : diaZero(a);
+  return { equipe: equipeNoHorario(dia, '22'), h: '22', data: dia };
+}
+// retornos entre dois dias: [{data, equipe, ini (06:00), fim (14:00), prox (06:00 do retorno seguinte)}]
+function retornosEntre(de, ate) {
+  const l = [];
+  for (let d = diaZero(de); d <= ate; d = somaDias(d, 1)) for (const e of EQUIPES) if (ehRetorno(e, d)) l.push({ data: d, equipe: e });
+  for (const r of l) { r.ini = new Date(r.data.getTime() + 6 * 36e5); r.fim = new Date(r.data.getTime() + 14 * 36e5); r.prox = new Date(somaDias(r.data, 2).getTime() + 6 * 36e5); }
+  return l;
+}
+// o retorno vigente: o mais recente que já começou (vale por 2 dias, até o retorno da equipe seguinte)
+// só vale a cobrança de retornos depois que o app entrou em uso (antes da 1ª contagem não há o que cobrar)
+function retornoCobrado(r, a = new Date()) {
+  const vs = contagensValidas(); if (!vs.length) return r.fim > a;
+  return r.prox > new Date(vs.reduce((m, x) => (x.fechadaEm < m ? x.fechadaEm : m), vs[0].fechadaEm));
+}
+function retornoVigente(a = new Date()) { const l = retornosEntre(somaDias(a, -4), a).filter((r) => r.ini <= a && retornoCobrado(r, a)); return l[l.length - 1] || null; }
+// situação de cada caixa num retorno: ok (contada no turno 06–14) · tarde (depois do turno) · falta (ainda dá tempo) · perdeu (venceu sem contar)
+function coberturaRetorno(r, a = new Date()) {
+  const vs = contagensValidas();
+  return caixas().map((c) => {
+    const k = vs.filter((x) => x.caixaId === c.id && new Date(x.fechadaEm) >= r.ini && new Date(x.fechadaEm) < r.prox).sort((p, q) => (p.fechadaEm < q.fechadaEm ? -1 : 1));
+    const noTurno = k.find((x) => new Date(x.fechadaEm) < r.fim), depois = k[0];
+    const estado = noTurno ? 'ok' : depois ? 'tarde' : a >= r.fim ? 'perdeu' : 'falta';
+    return { caixa: c, estado, contagem: noTurno || depois || null };
+  });
+}
+const nContados = (cob) => cob.filter((x) => x.estado === 'ok' || x.estado === 'tarde').length;
+function chipsRetorno(cob) {
+  const ic = { ok: '✓', tarde: '✓', falta: '', perdeu: '✕' }, tt = { ok: 'contada no turno', tarde: 'contada depois do turno', falta: 'falta contar', perdeu: 'não contada' };
+  return `<div class="pts">${cob.map((x) => `<a class="pt ${x.estado}" href="#caixa/${encodeURIComponent(x.caixa.id)}" title="${esc(nomeCaixa(x.caixa))}: ${tt[x.estado]}">${esc(x.caixa.numero)}${ic[x.estado] ? ' ' + ic[x.estado] : ''}</a>`).join('')}</div>`;
+}
 const r3 = (x) => Math.round(x * 1000) / 1000;
 // Aceita "1,5" e "1.5"
 function num(v) { if (v == null) return NaN; const s = String(v).trim().replace(/\s/g, '').replace(',', '.'); return s === '' ? NaN : Number(s); }
@@ -337,11 +405,11 @@ const saldoTotal = (i) => r3(caixas().reduce((s, c) => s + saldo(c.id, i.id), 0)
 const abaixoMin = (cx, i) => Number(i.minimo) > 0 && !!ultContagem(cx, i.id) && saldo(cx, i.id) < Number(i.minimo);
 const caVencido = (i) => i.tipo === 'EPI' && i.caValidade && i.caValidade < hoje();
 const qtdUn = (q, i) => `${fq(q)} <small>${esc((i && i.unidade) || 'un')}</small>`;
+// listas antigas com só A, B, C ganham o Turno D (a escala tem 4 equipes)
+const turnosCfg = () => { const t = D().config.turnos; return t.join('|') === 'Turno A|Turno B|Turno C' ? [...t, 'Turno D'] : t; };
 function sugerirTurno() {
-  const h = new Date().getHours();
-  const t = D().config.turnos;
-  if (t.length === 3) return h >= 6 && h < 14 ? t[0] : h >= 14 && h < 22 ? t[1] : t[2];
-  return t[0] || '';
+  const t = turnosCfg(), e = emServico().equipe;   // equipe em serviço agora, pela escala
+  return t.find((x) => new RegExp('(^|\\s)' + e + '$', 'i').test(x.trim())) || t[0] || '';
 }
 const semAcento = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 function busca(q, lista) {
@@ -395,6 +463,32 @@ function render() {
 /* ---------- Telas ---------- */
 const VIEWS = {};
 
+
+const dm = (d) => `${p2(d.getDate())}/${p2(d.getMonth() + 1)}`;
+const SEMANA = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+function cartaoRetorno(r, cob) {
+  const n = nContados(cob), tot = cob.length, agoraD = new Date(), acabou = agoraD >= r.fim, falta = tot - n;
+  const ok = !falta, cls = ok ? 'ok' : acabou ? 'bad' : 'neutral';
+  const msg = ok ? '✓ Todas as caixas foram contadas.' : acabou ? `Turno encerrado: ${falta} caixa${falta > 1 ? 's' : ''} sem contar. Conte assim que possível.` : `Faltam ${falta} caixa${falta > 1 ? 's' : ''} — contar até ${p2(r.fim.getHours())}:00.`;
+  return `<div class="card"><h2>Contagem geral · Equipe ${r.equipe} voltou da folga</h2>
+    <div class="row"><div class="grow"><b>${n} de ${tot} caixas contadas</b><div class="small muted">${SEMANA[r.data.getDay()]} ${dm(r.data)} · turno ${HORARIO['6']} · primeiro dia depois da folga</div></div>
+      <span class="tag ${ok ? 'ok' : acabou ? 'bad' : 'warn'}">${ok ? 'completa' : acabou ? 'incompleta' : 'em andamento'}</span></div>
+    <div class="progress"><i style="width:${Math.round((n / (tot || 1)) * 100)}%;background:${ok ? 'var(--ok)' : acabou ? 'var(--bad)' : 'var(--accent)'}"></i></div>
+    ${chipsRetorno(cob)}
+    <div class="small" style="color:var(--${ok ? 'ok' : acabou ? 'bad' : 'warn'})"><b>${msg}</b></div>
+    <div class="small muted" style="margin-top:4px">✓ verde = no turno · ✓ azul = depois do turno · laranja = falta · vermelho = não contada</div></div>`;
+}
+function escalaHtml(de, ate) {
+  const dias = []; for (let d = de; d <= ate; d = somaDias(d, 1)) dias.push(d);
+  const sv = emServico(), hojeZ = diaZero(new Date()), rets = {};
+  for (const r of retornosEntre(de, ate)) { if (r.ini > new Date()) { rets[r.equipe + +r.data] = '★'; continue; }
+    if (!retornoCobrado(r)) continue;
+    const cob = coberturaRetorno(r); rets[r.equipe + +r.data] = nContados(cob) === cob.length ? '✓' : new Date() >= r.fim ? '✕' : '…'; }
+  return `<div class="tw"><table class="escala"><thead><tr><th></th>${dias.map((d) => `<th ${+d === +hojeZ ? 'style="color:var(--title)"' : ''}>${dm(d)}<br><span>${SEMANA[d.getDay()]}</span></th>`).join('')}</tr></thead><tbody>
+    ${EQUIPES.map((e) => `<tr><th>${e}</th>${dias.map((d) => { const c = escalaDia(e, d), rt = rets[e + +d]; return `<td class="e${c} ${+d === +sv.data && e === sv.equipe && c === sv.h ? 'agora' : ''} ${rt ? 'ret' : ''}">${c}${rt ? `<small>${rt}</small>` : ''}</td>`; }).join('')}</tr>`).join('')}</tbody></table></div>
+    <div class="small muted">Números = hora de entrada (6, 14, 22), R repouso, F folga. Borda laranja = dia de retorno (contar todas as caixas): ★ a vir · … em andamento · ✓ completa · ✕ incompleta.</div>`;
+}
+
 // Início = visão das caixas
 VIEWS.inicio = () => {
   topo('Caixas de materiais');
@@ -412,8 +506,13 @@ VIEWS.inicio = () => {
   const status = velhas.length
     ? `<div class="status bad"><div class="big">⚠ ${velhas.length} caixa${velhas.length > 1 ? 's' : ''} sem contagem recente</div><div>${velhas.map((c) => 'Caixa ' + esc(c.numero)).join(', ')}. Conte antes da análise semanal.</div></div>`
     : `<div class="status ok"><div class="big">✓ Todas as caixas contadas</div><div>Nos últimos ${DIAS_CONTAGEM_VELHA} dias.</div></div>`;
+  const ret = retornoVigente(), cob = ret ? coberturaRetorno(ret) : null, estCx = {};
+  if (cob) for (const x of cob) estCx[x.caixa.id] = x;
+  const proxRet = retornosEntre(new Date(), somaDias(new Date(), 9)).find((r) => r.ini > new Date());
   $('#app').innerHTML = `
     ${status}
+    ${cob ? cartaoRetorno(ret, cob) : ''}
+    ${proxRet ? `<p class="small muted" style="margin:-4px 0 12px">Próxima contagem geral: <b>Equipe ${proxRet.equipe}</b>, ${SEMANA[proxRet.data.getDay()]} ${dm(proxRet.data)} às 06:00 (volta da folga).</p>` : ''}
     <div class="kpis">
       <div class="kpi"><b>${cxs.length}</b><span>caixas · ${itens.length} itens cada</span></div>
       <div class="kpi"><b style="color:${nAbaixo ? 'var(--bad)' : 'inherit'}">${nAbaixo}</b><span>itens abaixo do mínimo</span></div>
@@ -428,10 +527,13 @@ VIEWS.inicio = () => {
       const u = ultContagemCaixa(c.id);
       const ab = itens.filter((i) => abaixoMin(c.id, i)).length;
       const vel = caixaVelha(c.id);
-      return `<a class="cx ${ab ? 'bad' : ''}" href="#caixa/${encodeURIComponent(c.id)}"><div class="n">${esc(c.numero)}</div>
+      const er = estCx[c.id], erTxt = er ? { ok: '✓ contada no retorno', tarde: '✓ contada (depois do turno)', falta: 'falta contar hoje', perdeu: 'não contada no retorno' }[er.estado] : '';
+      return `<a class="cx ${ab ? 'bad' : ''} ${er ? 'ret-' + (er.estado === 'tarde' ? 'ok' : er.estado) : ''}" href="#caixa/${encodeURIComponent(c.id)}"><div class="n">${esc(c.numero)}</div>
         ${c.posto ? `<div class="p">${esc(c.posto)}</div>` : ''}
         <div class="s" style="color:${vel ? 'var(--warn)' : 'var(--muted)'}">${u ? 'contada ' + fmtDia(u.fechadaEm) : 'nunca contada'}</div>
+        ${er ? `<div class="small" style="font-weight:700;color:var(--${er.estado === 'ok' || er.estado === 'tarde' ? 'ok' : er.estado === 'perdeu' ? 'bad' : 'warn'})">${erTxt}</div>` : ''}
         ${ab ? `<span class="tag bad">${ab} abaixo do mín.</span>` : u ? '<span class="tag ok">ok</span>' : ''}</a>`; }).join('')}</div>
+    <div class="card"><h2>Escala e contagens gerais</h2>${escalaHtml(somaDias(new Date(), -3), somaDias(new Date(), 10))}</div>
     ${abertas.length ? `<div class="group-h">Reservas em aberto</div><div class="list">${abertas.slice(0, 6).map(linhaReserva).join('')}</div>` : ''}`;
 };
 function linhaReserva(r) {
@@ -474,11 +576,13 @@ VIEWS.contar = (arg) => {
 function telaInicioContagem(caixaPre) {
   const cfg = D().config;
   const hist = contagensValidas().sort((a, b) => (b.fechadaEm > a.fechadaEm ? 1 : -1)).slice(0, 10);
+  const ret = retornoVigente(), cob = ret ? coberturaRetorno(ret) : null, faltam = new Set((cob || []).filter((x) => x.estado === 'falta' || x.estado === 'perdeu').map((x) => x.caixa.id));
   $('#app').innerHTML = `
+    ${cob ? `<div class="small" style="margin-bottom:8px"><b>Contagem geral (Equipe ${ret.equipe}):</b> ${nContados(cob)} de ${cob.length} caixas contadas${faltam.size ? ' · faltam ' + [...faltam].map((id) => caixaPorId(id).numero).join(', ') : ' ✓'}</div>` : ''}
     <div class="card stack">
-      <div><label class="f">Caixa</label><div class="chips" id="cCaixa">${caixas().map((c) => `<button data-v="${c.id}" class="${c.id === caixaPre ? 'on' : ''}">${esc(c.numero)}${c.posto ? ' · ' + esc(c.posto) : ''}${caixaVelha(c.id) ? ' •' : ''}</button>`).join('')}</div>
-        <div class="small muted">• = sem contagem nos últimos ${DIAS_CONTAGEM_VELHA} dias</div></div>
-      <div><label class="f">Turno</label><div class="chips" id="cTurno">${cfg.turnos.map((t) => `<button data-v="${esc(t)}" class="${t === sugerirTurno() ? 'on' : ''}">${esc(t)}</button>`).join('')}</div></div>
+      <div><label class="f">Caixa</label><div class="chips" id="cCaixa">${caixas().map((c) => `<button data-v="${c.id}" class="${c.id === caixaPre ? 'on' : ''}">${esc(c.numero)}${c.posto ? ' · ' + esc(c.posto) : ''}${faltam.has(c.id) ? ' ⏳' : caixaVelha(c.id) ? ' •' : ''}</button>`).join('')}</div>
+        <div class="small muted">${faltam.size ? '⏳ = falta na contagem geral · ' : ''}• = sem contagem nos últimos ${DIAS_CONTAGEM_VELHA} dias</div></div>
+      <div><label class="f">Turno</label><div class="chips" id="cTurno">${turnosCfg().map((t) => `<button data-v="${esc(t)}" class="${t === sugerirTurno() ? 'on' : ''}">${esc(t)}</button>`).join('')}</div></div>
       ${cfg.equipe.length ? `<div><label class="f" for="cResp">Quem está contando</label><select id="cResp"><option value="">Selecione…</option>${cfg.equipe.map((p) => { const x = pessoa(p); return `<option value="${esc(p)}">${esc(x.nome)}${x.matricula ? ' — ' + esc(x.matricula) : ''}</option>`; }).join('')}<option value="__outro">Outra pessoa…</option></select></div>` : ''}
       <div class="g2" id="cOutro" ${cfg.equipe.length ? 'style="display:none"' : ''}><div><label class="f" for="cNome">Nome</label><input id="cNome" autocomplete="name"></div>
         <div><label class="f" for="cMat">Matrícula</label><input id="cMat" placeholder="CS…" autocapitalize="characters"></div></div>
@@ -941,6 +1045,21 @@ function tabelaGrupo(titulo, linhas, comValor, rotulo) {
     ${linhas.map((x) => `<tr><td>${esc(x.k)}<div class="barra" style="width:${Math.max(0, metr(x)) / max * 100}%"></div></td><td class="n">${fq(x.qtd)}</td>${comValor ? `<td class="n">${brl(x.valor)}</td>` : ''}</tr>`).join('')}
     </tbody></table></div></div>`;
 }
+// contagem geral no dia de retorno da folga: uma linha por retorno (da escala), com o resultado
+function cardAderencia() {
+  const rs = retornosEntre(somaDias(new Date(), -30), new Date()).filter((r) => r.ini <= new Date() && retornoCobrado(r)).reverse();
+  if (!rs.length) return '';
+  const linhas = rs.map((r) => {
+    const cob = coberturaRetorno(r), tot = cob.length, no = cob.filter((x) => x.estado === 'ok').length, dep = cob.filter((x) => x.estado === 'tarde').length;
+    const fal = cob.filter((x) => x.estado === 'falta' || x.estado === 'perdeu'), enc = new Date() >= r.fim;
+    const st = !fal.length ? ['ok', 'completa'] : enc ? ['bad', 'incompleta'] : ['warn', 'em andamento'];
+    return `<tr><td>${SEMANA[r.data.getDay()]} ${dm(r.data)}</td><td>Equipe ${r.equipe}</td><td class="n">${no}</td><td class="n">${dep}</td><td class="n">${fal.length}${fal.length ? ' <span class="small muted pc">(' + fal.map((x) => x.caixa.numero).join(', ') + ')</span>' : ''}</td><td><span class="tag ${st[0]}">${st[1]}</span></td></tr>`;
+  }).join('');
+  const comp = rs.filter((r) => { const c = coberturaRetorno(r); return nContados(c) === c.length; }).length;
+  return `<div class="card"><h2>Contagem geral no retorno da folga (últimos 30 dias)</h2>
+    <div class="small muted" style="margin-bottom:8px">${comp} de ${rs.length} retornos com todas as caixas contadas. "No turno" = contada entre 06:00 e 14:00 do dia do retorno.</div>
+    <div class="tw"><table class="tb"><thead><tr><th>Dia</th><th>Equipe</th><th class="n">No turno</th><th class="n">Depois</th><th class="n">Faltou</th><th>Situação</th></tr></thead><tbody>${linhas}</tbody></table></div></div>`;
+}
 VIEWS.relatorios = () => {
   topo('Relatórios');
   const cfg = D().config;
@@ -978,6 +1097,7 @@ VIEWS.relatorios = () => {
       <button class="btn grow" data-a="rel-resumo">Compartilhar resumo</button>
     </div>
     ${!cons.length ? '<div class="card muted">Nenhum consumo no período. O consumo aparece a partir da segunda contagem de cada caixa.</div>' : ''}
+    ${cardAderencia()}
     <div class="lado">
       ${rel.caixa ? '' : tabelaGrupo('Consumo por caixa', agrupar(cons, (x) => 'Caixa ' + x.c.caixa + (x.c.posto ? ' · ' + x.c.posto : '')), tc, 'Caixa')}
       ${tabelaGrupo('Consumo por turno da contagem', agrupar(cons, (x) => x.c.turno), tc, 'Turno')}
@@ -1060,7 +1180,7 @@ VIEWS.ajustes = () => {
       <div><label class="f" for="cfCx">Caixas — uma por linha: número; posto</label><textarea id="cfCx" style="min-height:200px" placeholder="01; Posto 1&#10;02; Posto 2">${esc(caixas().map((c) => c.numero + (c.posto ? '; ' + c.posto : '')).join('\n'))}</textarea>
         <div class="small muted">Tirar uma linha desativa a caixa (o histórico fica).</div></div>
       <div><label class="f" for="cfEq">Equipe — uma por linha: nome; matrícula (vazio = digitar na contagem)</label><textarea id="cfEq" style="min-height:120px" placeholder="João Silva; CS12345">${esc(cfg.equipe.join('\n'))}</textarea></div>
-      <div><label class="f" for="cfTur">Turnos (um por linha)</label><textarea id="cfTur">${esc(cfg.turnos.join('\n'))}</textarea></div>
+      <div><label class="f" for="cfTur">Turnos (um por linha)</label><textarea id="cfTur">${esc(turnosCfg().join('\n'))}</textarea></div>
       <div><label class="f" for="cfUnid">Unidades de medida (separadas por vírgula)</label><input id="cfUnid" value="${esc(cfg.unidades.join(', '))}"></div>
       <button class="btn full primary" data-a="salvar-cfg">Salvar ajustes</button>
     </div></div><div>
@@ -1435,7 +1555,7 @@ const ACOES = {
     const cfg = D().config;
     cfg.unidade = $('#cfUn').value.trim();
     salvarCaixas($('#cfCx').value);
-    cfg.turnos = linhas('#cfTur'); if (!cfg.turnos.length) cfg.turnos = ['Turno A', 'Turno B', 'Turno C'];
+    cfg.turnos = linhas('#cfTur'); if (!cfg.turnos.length) cfg.turnos = ['Turno A', 'Turno B', 'Turno C', 'Turno D'];
     cfg.equipe = linhas('#cfEq').map((p) => { const x = pessoa(p); return x.nome + (x.matricula ? '; ' + x.matricula.toUpperCase() : ''); }).sort((a, b) => a.localeCompare(b, 'pt'));
     const un = [...new Set($('#cfUnid').value.split(',').map((x) => x.trim()).filter(Boolean))];
     if (un.length) cfg.unidades = un;

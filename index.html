@@ -170,6 +170,15 @@ tr.muted td { color: var(--muted); }
 .pt.falta { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
 .pt.perdeu { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
 .cx.ret-ok { border-top-color: var(--ok); } .cx.ret-falta { border-top-color: var(--warn); } .cx.ret-perdeu { border-top-color: var(--bad); }
+
+/* foto da caixa: câmera ao vivo em tela cheia */
+#cam { position: fixed; inset: 0; z-index: 50; background: #000; display: flex; flex-direction: column; color: #fff; }
+#cam video, #cam img.prev { flex: 1; min-height: 0; width: 100%; object-fit: contain; background: #000; }
+#cam .msg { position: absolute; left: 16px; right: 16px; top: 30%; background: rgba(0,0,0,.8); padding: 16px; border-radius: 8px; font-weight: 600; text-align: center; }
+#cam .cam-bar { display: flex; gap: 10px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: #021a30; }
+#cam .cam-bar .btn { flex: 1; }
+#cam .dica { position: absolute; top: calc(10px + env(safe-area-inset-top)); left: 12px; right: 12px; text-align: center; font-size: 14px; font-weight: 700; text-shadow: 0 1px 3px #000; }
+.fotoc { width: 100%; max-height: 60vh; object-fit: contain; background: #021a30; border-radius: var(--radius-sm); display: block; }
 .ctl .same { white-space: nowrap; }
 .mob { color: var(--ink); }
 .row.wrap > .btn.grow { flex: 1 1 calc(50% - 10px); }
@@ -607,7 +616,7 @@ function telaContagem() {
     </div>
     ${itens.length > 15 ? `<input id="fCont" type="search" placeholder="Buscar material ou código" value="${esc(filtroCont)}" style="margin-bottom:6px">` : ''}
     <div class="list">${vis.map((i) => linhaContagem(i, r)).join('') || '<div class="empty">Nada encontrado.</div>'}</div>
-    <div class="sticky-foot"><button class="btn big primary" data-a="fechar-cont">Encerrar contagem</button></div>`;
+    <div class="sticky-foot"><button class="btn big primary" data-a="fechar-cont">📷 Foto da caixa e encerrar</button></div>`;
   const f = $('#fCont');
   if (f) f.addEventListener('input', () => { filtroCont = f.value; const pos = f.selectionStart; telaContagem(); const n = $('#fCont'); n.focus(); n.setSelectionRange(pos, pos); });
 }
@@ -645,7 +654,83 @@ function setContagem(itemId, valor) {
   $('.progress i').style.width = (contados / itens.length) * 100 + '%';
   $('#progTxt').textContent = `${contados} de ${itens.length} materiais contados`;
 }
-function fecharContagem() {
+
+// ---------- foto da caixa: só pela câmera ao vivo (nunca galeria), com data e hora na imagem ----------
+// A foto é guardada neste aparelho (IndexedDB) e enviada ao Storage "mat-fotos" quando há sinal (script 02 do Supabase).
+const FotoDB = {
+  abrir() { return this._p || (this._p = new Promise((res, rej) => { const q = indexedDB.open('materiais_fotos', 1); q.onupgradeneeded = () => q.result.createObjectStore('f'); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); })); },
+  async tx(modo, fn) { const db = await this.abrir(); return new Promise((res, rej) => { const t = db.transaction('f', modo), r = fn(t.objectStore('f')); t.oncomplete = () => res(r.result); t.onerror = () => rej(t.error); }); },
+  salvar(id, blob) { return this.tx('readwrite', (st) => st.put(blob, id)); },
+  ler(id) { return this.tx('readonly', (st) => st.get(id)); }
+};
+const fotosEnv = { ler() { try { return JSON.parse(localStorage.getItem('materiais_fotos_env')) || {}; } catch (e) { return {}; } }, marcar(id) { const o = this.ler(); o[id] = 1; try { localStorage.setItem('materiais_fotos_env', JSON.stringify(o)); } catch (e) {} } };
+const fotosPendentes = () => { const env = fotosEnv.ler(); return D().contagens.filter((c) => c.foto && c.foto.disp === D().dispositivo && !env[c.id]).length; };
+const dataHoraMarca = (d) => `${p2(d.getDate())}/${p2(d.getMonth() + 1)}/${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`;
+function marcaDagua(video, rotulo, d) {
+  const esc1 = Math.min(1, 1600 / Math.max(video.videoWidth, video.videoHeight)), w = Math.round(video.videoWidth * esc1), h = Math.round(video.videoHeight * esc1);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const x = cv.getContext('2d'); x.drawImage(video, 0, 0, w, h);
+  const fs = Math.max(16, Math.round(Math.min(w, h) * 0.05)), alt = fs * 3.1;
+  x.fillStyle = 'rgba(0,0,0,.55)'; x.fillRect(0, h - alt, w, alt);
+  x.fillStyle = '#fff'; x.textBaseline = 'alphabetic'; x.shadowColor = '#000'; x.shadowBlur = 4;
+  x.font = `800 ${fs * 1.15}px sans-serif`; x.fillText(dataHoraMarca(d), fs * 0.6, h - alt + fs * 1.3);
+  x.font = `600 ${fs * 0.85}px sans-serif`; x.fillText(rotulo, fs * 0.6, h - alt + fs * 2.5, w - fs * 1.2);
+  return new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.82));
+}
+// abre a câmera; devolve { blob, em } ou null se a pessoa desistir. Sem câmera = sem foto (não há escolha de arquivo).
+function abrirCamera(rotulo) {
+  return new Promise((resolve) => {
+    const el = document.createElement('div'); el.id = 'cam';
+    el.innerHTML = `<div class="dica">Foto da caixa aberta, com todos os materiais visíveis</div><video playsinline muted autoplay></video><img class="prev" alt="Foto tirada" hidden><div class="msg" hidden></div>
+      <div class="cam-bar"><button class="btn" data-k="voltar">Voltar</button><button class="btn primary" data-k="tirar" disabled>📷 Tirar foto</button></div>`;
+    document.body.appendChild(el);
+    const v = $('video', el), pv = $('img.prev', el), msg = $('.msg', el), bt = $('[data-k=tirar]', el), bv = $('[data-k=voltar]', el);
+    let stream = null, resultado = null, modoPrev = false;
+    const parar = () => { if (stream) stream.getTracks().forEach((t) => t.stop()); stream = null; };
+    const fechar = (r) => { parar(); if (pv.src) URL.revokeObjectURL(pv.src); el.remove(); resolve(r); };
+    async function ligar() {
+      modoPrev = false; resultado = null; msg.hidden = true; pv.hidden = true; v.hidden = false; bt.disabled = true; bt.textContent = '📷 Tirar foto'; bv.textContent = 'Voltar';
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg.hidden = false; msg.textContent = 'Este aparelho/navegador não permite abrir a câmera dentro do app. Abra o app pelo Chrome (endereço https) e tente de novo.'; return; }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 } }, audio: false });
+        v.srcObject = stream; await v.play().catch(() => {});
+        const pronto = () => { if (v.videoWidth) bt.disabled = false; };
+        v.addEventListener('loadedmetadata', pronto); pronto();
+      } catch (e) {
+        msg.hidden = false; msg.textContent = 'Não consegui abrir a câmera. Permita o uso da câmera para este app (toque no cadeado ao lado do endereço > Permissões > Câmera) e toque em "Tentar de novo".';
+        bt.disabled = false; bt.textContent = 'Tentar de novo'; bt.dataset.k = 'tentar';
+      }
+    }
+    el.addEventListener('click', async (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const k = b.dataset.k;
+      if (k === 'voltar') return modoPrev ? ligar() : fechar(null);
+      if (k === 'tentar') { bt.dataset.k = 'tirar'; return ligar(); }
+      if (k === 'tirar' && !modoPrev) {
+        if (!v.videoWidth) return;
+        const em = new Date(), blob = await marcaDagua(v, rotulo, em);
+        resultado = { blob, em: em.toISOString() }; parar();
+        pv.src = URL.createObjectURL(blob); pv.hidden = false; v.hidden = true; modoPrev = true;
+        bt.textContent = '✓ Usar esta foto'; bt.dataset.k = 'usar'; bt.disabled = false; bv.textContent = 'Refazer';
+      } else if (k === 'usar' && resultado) { fechar(resultado); }
+    });
+    ligar();
+  });
+}
+// mostra a foto da contagem: neste aparelho, ou baixada da nuvem
+async function fotoDaContagem(c) {
+  let blob = null;
+  try { blob = await FotoDB.ler(c.id); } catch (e) {}
+  if (!blob && Nuvem.ativa() && navigator.onLine) {
+    try {
+      const r = await fetch(`${SUPA_URL}/storage/v1/object/authenticated/mat-fotos/${encodeURIComponent(c.id)}.jpg`, { headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + await Nuvem.token() } });
+      if (r.ok) { blob = await r.blob(); FotoDB.salvar(c.id, blob).catch(() => {}); }
+    } catch (e) {}
+  }
+  return blob;
+}
+let fechando = false;
+async function fecharContagem() {
   const r = D().rascunho;
   const itens = ativos();
   const falt = itens.filter((i) => r.contagens[i.id] == null);
@@ -655,8 +740,18 @@ function fecharContagem() {
       corpo: `<p>Ainda falta${falt.length > 1 ? 'm' : ''} <b>${falt.length}</b> ite${falt.length > 1 ? 'ns' : 'm'}. Conte todos os itens da caixa (se não tiver nenhum, informe 0):</p><div class="small">${falt.slice(0, 15).map((i) => '• ' + esc(i.nome)).join('<br>')}</div>` });
   }
   const cx = caixaPorId(r.caixaId);
+  if (fechando) return;
+  fechando = true;
+  try {
+    if (!r.fotoEm) {
+      const f = await abrirCamera(`Caixa ${cx.numero}${cx.posto ? ' · ' + cx.posto : ''} · ${r.turno} · ${r.responsavel}`);
+      if (!f) return toast('A foto da caixa é obrigatória para encerrar a contagem');
+      try { await FotoDB.salvar(r.id, f.blob); } catch (e) { return modal({ titulo: 'Não consegui guardar a foto', ok: 'OK', cancelar: null, corpo: '<p>O aparelho recusou guardar a foto (pouco espaço?). Libere espaço e tire a foto de novo.</p>' }); }
+      r.fotoEm = f.em; DB.salvar(true);
+    }
+  } finally { fechando = false; }
   const c = { id: r.id, caixaId: r.caixaId, caixa: cx.numero, posto: cx.posto || '', turno: r.turno, responsavel: r.responsavel, matricula: r.matricula || '',
-    iniciadaEm: r.iniciadaEm, fechadaEm: agora(), por: quem(),
+    iniciadaEm: r.iniciadaEm, fechadaEm: agora(), por: quem(), foto: { em: r.fotoEm, disp: D().dispositivo },
     linhas: itens.map((i) => ({ itemId: i.id, codigo: i.codigo || '', nome: i.nome, unidade: i.unidade, anterior: ultContagem(r.caixaId, i.id) || saldo(r.caixaId, i.id) ? saldo(r.caixaId, i.id) : null, contado: r.contagens[i.id], custo: Number(i.custo) || 0 })) };
   D().contagens.push(c);
   D().rascunho = null; filtroCont = '';
@@ -686,11 +781,17 @@ VIEWS.contagem = (id) => {
       <button class="btn grow" data-a="compartilhar-cont" data-c="${c.id}">Compartilhar</button>
       ${supervisor() && !c.estorno ? `<button class="btn danger grow" data-a="estornar-cont" data-c="${c.id}">Estornar</button>` : ''}
     </div>
+    <div class="card" id="fotoBox"><h2>Foto da caixa</h2>${c.foto ? `<div class="small muted" id="fotoSt">Carregando a foto…</div><img class="fotoc" id="fotoImg" alt="Foto da caixa ${esc(c.caixa)}" hidden><div class="small muted" style="margin-top:6px">Tirada em ${fmt(c.foto.em, true)} (a data e a hora estão gravadas na imagem).</div>` : '<div class="small muted">Sem foto (contagem anterior à exigência da foto).</div>'}</div>
     <div class="card" style="padding:6px 8px"><div class="tw"><table class="tb"><thead><tr><th>Material</th><th class="n pc">Anterior</th><th class="n">Contado</th><th class="n">Usado</th><th class="n pc">Mín./Máx.</th></tr></thead><tbody>
       ${c.linhas.map((l) => { const i = itemPorId(l.itemId) || {}; const x = consumoLinha(l); const bx = Number(i.minimo) && l.contado < i.minimo; return `<tr><td>${esc(l.nome)}${l.codigo ? `<div class="small muted">${esc(l.codigo)}</div>` : ''}</td>
         <td class="n pc">${l.anterior == null ? '—' : fq(l.anterior)}</td><td class="n" ${bx ? 'style="color:var(--bad)"' : ''}><b>${fq(l.contado)}</b></td>
         <td class="n">${x > 0 ? fq(x) : x < 0 ? `<span style="color:var(--warn)">+${fq(-x)}</span>` : '—'}</td><td class="n small pc">${fq(i.minimo)} / ${fq(i.maximo)}</td></tr>`; }).join('')}
     </tbody></table></div><p class="small muted" style="margin-bottom:0">Registrada por ${esc(c.por || '—')}. Valor com “+” = havia mais do que o anterior (abastecimento não lançado ou erro na contagem anterior).${temCusto() ? ' Consumo: ' + brl(cons.valor) + '.' : ''}</p></div>`;
+  if (c.foto) fotoDaContagem(c).then((blob) => {
+    const st = $('#fotoSt'), im = $('#fotoImg'); if (!st || !im) return;
+    if (!blob) { st.textContent = 'A foto ainda não chegou neste aparelho (o aparelho que contou precisa sincronizar com sinal).'; return; }
+    im.src = URL.createObjectURL(blob); im.hidden = false; st.hidden = true;
+  });
 };
 function textoContagem(c) {
   const u = D().config.unidade;
@@ -1316,7 +1417,22 @@ const Nuvem = {
     if (!this.ativa()) return 0;
     let n = 0;
     for (const col of COLECOES) { const env = this.sinc.enviado[col]; for (const [id, obj] of this.registros(col)) if (this.podeEnviar(col, obj) && env[id] !== digital(obj)) n++; }
-    return n;
+    return n + fotosPendentes();
+  },
+  erroFoto: '',
+  // envia as fotos feitas neste aparelho ao Storage (bucket mat-fotos); falha aqui não derruba a sincronização dos dados
+  async enviarFotos() {
+    this.erroFoto = '';
+    const env = fotosEnv.ler();
+    for (const c of D().contagens) {
+      if (!c.foto || c.foto.disp !== D().dispositivo || env[c.id]) continue;
+      const blob = await FotoDB.ler(c.id).catch(() => null);
+      if (!blob) continue;
+      const r = await fetch(`${SUPA_URL}/storage/v1/object/mat-fotos/${encodeURIComponent(c.id)}.jpg`, { method: 'POST', headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + await this.token(), 'Content-Type': 'image/jpeg' }, body: blob });
+      const txt = r.ok ? '' : await r.text();
+      if (r.ok || r.status === 409 || /already exists|Duplicate/i.test(txt)) fotosEnv.marcar(c.id);
+      else { this.erroFoto = /not found|Bucket/i.test(txt) ? 'falta rodar o script 02 do Supabase (bucket mat-fotos)' : txt.slice(0, 80); break; }
+    }
   },
   receber(col, linha, primeira) {
     const env = this.sinc.enviado[col];
@@ -1369,6 +1485,7 @@ const Nuvem = {
           for (const x of parte) env[x.id] = x.d;
         }
       }
+      try { await this.enviarFotos(); } catch (e) { if (!(e instanceof TypeError)) this.erroFoto = e.message; }
       this.sinc.ultima = agora();
       this.estado = 'ok'; this.erro = '';
     } catch (e) {
@@ -1389,7 +1506,8 @@ const Nuvem = {
     if (this.estado === 'offline') return `Sem internet. ${n} alteração(ões) serão enviadas quando o sinal voltar.`;
     if (this.estado === 'erro') return `Erro ao sincronizar (${this.erro.slice(0, 80)}). ${n} pendente(s).`;
     if (this.estado === 'enviando') return 'Sincronizando…';
-    return `${ult}.${n ? ` ${n} pendente(s).` : ' Tudo salvo na nuvem.'}`;
+    const fp = fotosPendentes();
+    return `${ult}.${n ? ` ${n} pendente(s).` : ' Tudo salvo na nuvem.'}${fp && this.erroFoto ? ` Fotos não enviadas: ${this.erroFoto}.` : ''}`;
   },
   mostrar() {
     const el = document.getElementById('sincSt');
